@@ -5,20 +5,23 @@ import torch
 
 def get_args():
     parser = argparse.ArgumentParser(description='RL')
-    parser.add_argument('--algo', default='a2c',
-                        help='algorithm to use: a2c | ppo | acktr')
+    parser.add_argument('--algo', default='qra2c',
+                        help='algorithm to use: a2c | qra2c | ppo | acktr')
     parser.add_argument('--lr', type=float, default=2.5e-4,
                         help='learning rate (default: 2.5e-4)')
     parser.add_argument('--lr-schedule', type=float, default=None,
                         help='learning rate step schedule (default: None)')
     parser.add_argument('--eps', type=float, default=1e-5,
                         help='RMSprop optimizer epsilon (default: 1e-5)')
+    parser.add_argument("--num-quant", type=str, default=5, help="numbers of the quant")
     parser.add_argument('--alpha', type=float, default=0.99,
                         help='RMSprop optimizer apha (default: 0.99)')
     parser.add_argument('--gamma', type=float, default=0.99,
                         help='discount factor for rewards (default: 0.99)')
     parser.add_argument('--use-gae', action='store_true', default=False,
                         help='use generalized advantage estimation')
+    parser.add_argument("--opp-agents", type=str, default=1, help="numbers of the agents")
+
     parser.add_argument('--tau', type=float, default=0.95,
                         help='gae parameter (default: 0.95)')
     parser.add_argument('--entropy-coef', type=float, default=0.01,
@@ -61,7 +64,7 @@ def get_args():
                         help='vis interval, one log per n updates (default: 100)')
     parser.add_argument('--num-frames', type=int, default=5e7,
                         help='number of frames to train (default: 5e7)')
-    parser.add_argument('--env-name', default='PongNoFrameskip-v4',
+    parser.add_argument('--env-name', default='PommeFFACompetitionFast-v0',
                         help='environment to train on (default: PongNoFrameskip-v4)')
     parser.add_argument('--log-dir', default='/tmp/gym/',
                         help='directory to save agent logs (default: /tmp/gym)')
