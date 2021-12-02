@@ -1,6 +1,6 @@
 from .model_pomm_QR import PommNet
 from .model_generic import CNNBase, MLPBase
-from .policy import Policy
+from .policy_QR import Policy
 
 
 def create_policy(obs_space, action_space,num_quant, name='basic', nn_kwargs={}, train=True):
