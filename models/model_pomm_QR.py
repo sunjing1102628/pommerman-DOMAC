@@ -118,9 +118,11 @@ class ConvNet4(nn.Module):
 
 
 class PommNet(NNBase):
-    def __init__(self, obs_shape, recurrent=False, hidden_size=512, batch_norm=True, cnn_config='conv4'):
+    def __init__(self, obs_shape,action_dim, num_quant,recurrent=False, hidden_size=512, batch_norm=True, cnn_config='conv4'):
         super(PommNet, self).__init__(recurrent, hidden_size, hidden_size)
         self.obs_shape = obs_shape
+        self.action_dim = action_dim
+        self.num_quant = num_quant
 
         # FIXME hacky, recover input shape from flattened observation space
         # assuming an 11x11 board and 3 non spatial features
@@ -152,9 +154,10 @@ class PommNet(NNBase):
         )
 
         self.actor = nn.Linear(hidden_size + hidden_size//4, hidden_size)
+        #print('num_quant',num_quant)
 
         self.critic = nn.Sequential(
-            nn.Linear(hidden_size + hidden_size//4, 1),
+            nn.Linear(hidden_size + hidden_size//4, action_dim*num_quant),
             nn.Tanh()
         )
 
@@ -173,6 +176,6 @@ class PommNet(NNBase):
         out_actor = self.actor(x)
         out_value = self.critic(x)
 
-        return out_value, out_actor, rnn_hxs
+        return out_value.view(-1, self.action_dim, self.num_quant), out_actor, rnn_hxs
 
 

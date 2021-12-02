@@ -1,11 +1,13 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-
+import numpy as np
 from .kfac import KFACOptimizer
 
+def huber(x, k=1.0):
+    return torch.where(x.abs() < k, 0.5 * x.pow(2), k * (x.abs() - 0.5 * k))
 
-class A2C_ACKTR():
+class QR_A2C_ACKTR():
     def __init__(self,
                  actor_critic,
                  value_loss_coef,
@@ -43,7 +45,10 @@ class A2C_ACKTR():
         obs_shape = rollouts.obs.size()[2:]
 
         action_shape = rollouts.actions.size()[-1]
+        num_quant = rollouts.value_preds.size()[-1]
         num_steps, num_processes, _ = rollouts.rewards.size()
+        tau = torch.Tensor((2 * np.arange(num_quant) + 1) / (2.0 * num_quant)).view(1, -1).to(rollouts.actions.device)
+
         #print('num_steps',num_steps)
 
         values, action_log_probs, dist_entropy, _ = self.actor_critic.evaluate_actions(
@@ -52,12 +57,24 @@ class A2C_ACKTR():
             rollouts.masks[:-1].view(-1, 1),
             rollouts.actions.view(-1, action_shape))
 
-        values = values.view(num_steps, num_processes, 1)
+        values = values.view(num_steps, num_processes, num_quant)
         #print('values.size',values.size())
         action_log_probs = action_log_probs.view(num_steps, num_processes, 1)
+        #print('rollouts.returns[:-1], 2)',rollouts.returns[:-1].size())
+        Qtgt = torch.mean(rollouts.returns[:-1], 2).reshape(5, 16, 1)
+        #print('values',values.size())
+        Q = torch.mean(values, 2).reshape(5, 16, 1)
+        advantages = Qtgt-Q
+        #print('advantages',advantages.size())
 
-        advantages = rollouts.returns[:-1] - values
-        value_loss = advantages.pow(2).mean()
+        #advantages = rollouts.returns[:-1] - values
+        theta = values.unsqueeze(3)
+        Theta = rollouts.returns[:-1].unsqueeze(2)
+        diff =  Theta - theta
+        loss = huber(diff).to(rollouts.actions.device) * (tau - (diff.detach() < 0).float()).abs().to(
+            rollouts.actions.device)
+        value_loss = loss.mean()
+        #value_loss = advantages.pow(2).mean()
 
         action_loss = -(advantages.detach() * action_log_probs).mean()
 
