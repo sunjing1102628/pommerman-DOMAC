@@ -169,7 +169,8 @@ def main():
             # If done then clean the history of observations.
             #print('done_main',done)
             masks = torch.tensor([[0.0] if done_ else [1.0] for done_ in done], device=device)
-            #print('masks_main',masks)
+            print('value_main',value)
+            print('value_main_size', value.size())
             rollouts.insert(obs, recurrent_hidden_states, action, action_log_prob, value, reward, masks)
             if replay is not None:
                 replay.insert(
