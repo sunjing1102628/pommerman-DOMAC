@@ -45,6 +45,7 @@ class Policy(nn.Module):
         _ = dist.entropy().mean()
         value = value[np.arange(len(value)), action.squeeze(1)].to(inputs.device)
         print('value in act',value)
+        print('value_size in act', value.size())
 
         return value, action, action_log_probs, rnn_hxs
 
