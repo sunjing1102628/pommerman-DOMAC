@@ -137,6 +137,7 @@ def main():
     rollouts.to(device)
 
     episode_rewards = deque(maxlen=10)
+    log=[]
     
     start = time.time()
     for j in range(num_updates):
@@ -233,9 +234,15 @@ def main():
                 for info in infos:
                     if 'episode' in info.keys():
                         eval_episode_rewards.append(info['episode']['r'])
-
+            log.append([j, np.mean(eval_episode_rewards)])
+            print(" using {} episodes: mean reward {:.5f}\n".
+                  format(j, np.mean(eval_episode_rewards)))
             print(" Evaluation using {} episodes: mean reward {:.5f}\n".
-                format(len(eval_episode_rewards), np.mean(eval_episode_rewards)))
+                  format(len(eval_episode_rewards), np.mean(eval_episode_rewards)))
+        np.savetxt('./results/final_results1202/train_score_seed_{}.csv'.format(42), np.array(log),
+                   delimiter=";")
+            #print(" Evaluation using {} episodes: mean reward {:.5f}\n".
+            #    format(len(eval_episode_rewards), np.mean(eval_episode_rewards)))
 
         '''if args.vis and j % args.vis_interval == 0:
             try:
