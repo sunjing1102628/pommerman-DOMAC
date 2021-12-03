@@ -237,13 +237,13 @@ def main():
             print(" Evaluation using {} episodes: mean reward {:.5f}\n".
                 format(len(eval_episode_rewards), np.mean(eval_episode_rewards)))
 
-        if args.vis and j % args.vis_interval == 0:
+        '''if args.vis and j % args.vis_interval == 0:
             try:
                 # Sometimes monitor doesn't properly flush the outputs
                 win = visdom_plot(viz, win, args.log_dir, args.env_name,
                                   args.algo, args.num_frames)
             except IOError:
-                pass
+                pass'''
 
 
 if __name__ == "__main__":

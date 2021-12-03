@@ -43,9 +43,8 @@ class Policy(nn.Module):
 
         action_log_probs = dist.log_probs(action)
         _ = dist.entropy().mean()
-        value = value[np.arange(len(value)), action.squeeze(1)].to(inputs.device)
-        # print('value in act',value)
-        # print('value_size in act', value.size())
+        #value = value[np.arange(len(value)), action.squeeze(1)].to(inputs.device)
+
 
         return value, action, action_log_probs, rnn_hxs
 
@@ -61,6 +60,6 @@ class Policy(nn.Module):
 
         action_log_probs = dist.log_probs(action)
         dist_entropy = dist.entropy().mean()
-        value1 = value[np.arange(len(value)), action.squeeze(1)].to(inputs.device)
+        #value1 = value[np.arange(len(value)), action.squeeze(1)].to(inputs.device)
 
-        return value1, action_log_probs, dist_entropy, rnn_hxs
+        return value, action_log_probs, dist_entropy, rnn_hxs

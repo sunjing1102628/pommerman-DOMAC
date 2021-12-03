@@ -187,8 +187,8 @@ def main():
 
         # #print('next_value',next_value)
         # #print('next_value_size', next_value.size())
-        Znext_max = next_value[np.arange(len(next_value)), next_value.mean(2).max(1)[1]]
-        rollouts.compute_returns(Znext_max, args.use_gae, args.gamma, args.tau)
+
+        rollouts.compute_returns(next_value, args.use_gae, args.gamma, args.tau)
 
         value_loss, action_loss, dist_entropy, other_metrics = agent.update(rollouts, j, replay)
         #print('other_metrics',other_metrics)
