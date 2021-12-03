@@ -7,7 +7,8 @@ class Policy(nn.Module):
     def __init__(self, nn_actor,nn_critic, action_space):
         super(Policy, self).__init__()
 
-        assert isinstance(nn, torch.nn.Module)
+        assert isinstance(nn_actor, torch.nn.Module)
+        assert isinstance(nn_critic, torch.nn.Module)
         #self.nn = nn
         self.nn_actor = nn_actor
         self.nn_critic = nn_critic
