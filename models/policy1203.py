@@ -57,10 +57,10 @@ class Policy(nn.Module):
     def evaluate_actions(self, inputs, rnn_hxs, masks, action):
         #actor_features, rnn_hxs = self.nn(inputs, rnn_hxs, masks)
         actor_features, rnn_hxs = self.nn_actor(inputs, rnn_hxs, masks)
-        value = self.nn_critic(inputs, rnn_hxs, masks)
+        #value = self.nn_critic(inputs, rnn_hxs, masks)
         dist = self.dist(actor_features)
 
         action_log_probs = dist.log_probs(action)
         dist_entropy = dist.entropy().mean()
 
-        return value, action_log_probs, dist_entropy, rnn_hxs
+        return  action_log_probs, dist_entropy, rnn_hxs
