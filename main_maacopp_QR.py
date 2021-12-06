@@ -263,13 +263,13 @@ def main():
         np.savetxt('./results/final_results_maacopp_QR1206/train_score_seed_{}.csv'.format(42), np.array(log),
                      delimiter=";")
 
-        if args.vis and j % args.vis_interval == 0:
+        '''if args.vis and j % args.vis_interval == 0:
             try:
                 # Sometimes monitor doesn't properly flush the outputs
                 win = visdom_plot(viz, win, args.log_dir, args.env_name,
                                   args.algo, args.num_frames)
             except IOError:
-                pass
+                pass'''
 
 
 if __name__ == "__main__":
