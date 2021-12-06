@@ -20,7 +20,7 @@ def get_args():
                         help='discount factor for rewards (default: 0.99)')
     parser.add_argument('--use-gae', action='store_true', default=False,
                         help='use generalized advantage estimation')
-    parser.add_argument("--opp-agents", type=str, default=1, help="numbers of the agents")
+    parser.add_argument("--opp-agents", type=str, default=3, help="numbers of the agents")
 
     parser.add_argument('--tau', type=float, default=0.95,
                         help='gae parameter (default: 0.95)')
