@@ -61,13 +61,14 @@ class QR_A2C_ACKTR():
         #print('values.size',values.size())
         action_log_probs = action_log_probs.view(num_steps, num_processes, 1)
         #print('rollouts.returns[:-1], 2)',rollouts.returns[:-1].size())
-        # Qtgt = torch.mean(rollouts.returns[:-1], 2).reshape(5, 16, 1)
-        # #print('values',values.size())
-        # Q = torch.mean(values, 2).reshape(5, 16, 1)
-        # advantages = Qtgt-Q
+        #Qtgt = torch.mean(rollouts.returns[:-1], 2).reshape(5, 16, 1)
+        #print('values',values.size())
+        #Q = torch.mean(values, 2).reshape(5, 16, 1)
+        #advantages = Qtgt-Q
+        advantages = rollouts.returns[:-1] - values
         #print('advantages',advantages.size())
 
-        advantages = rollouts.returns[:-1] - values
+        #advantages = rollouts.returns[:-1] - values
         theta = values.unsqueeze(3)
         Theta = rollouts.returns[:-1].unsqueeze(2)
         diff =  Theta - theta
