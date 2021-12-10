@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 from .kfac import KFACOptimizer
+import torch.nn.functional as F
 
 def huber(x, k=1.0):
     return torch.where(x.abs() < k, 0.5 * x.pow(2), k * (x.abs() - 0.5 * k))
@@ -47,7 +48,7 @@ class QR_A2C_ACKTR():
         action_shape = rollouts.actions.size()[-1]
         num_quant = rollouts.value_preds.size()[-1]
         num_steps, num_processes, _ = rollouts.rewards.size()
-        tau = torch.Tensor((2 * np.arange(num_quant) + 1) / (2.0 * num_quant)).view(1, -1).to(rollouts.actions.device)
+        tau = torch.Tensor((2 * np.arange(num_quant) + 1) / (2.0 * num_quant)).view(1, -1,1).to(rollouts.actions.device)
 
         #print('num_steps',num_steps)
 
@@ -71,10 +72,15 @@ class QR_A2C_ACKTR():
         #advantages = rollouts.returns[:-1] - values
         theta = values.unsqueeze(3)
         Theta = rollouts.returns[:-1].unsqueeze(2)
-        diff =  Theta - theta
-        loss = huber(diff).to(rollouts.actions.device) * (tau - (diff.detach() < 0).float()).abs().to(
-            rollouts.actions.device)
-        value_loss = loss.mean()
+        u = Theta - theta
+        weight = torch.abs(tau - u.le(0.).float())
+        loss0 = F.smooth_l1_loss(theta, Theta.detach(), reduction='none')
+
+        loss1 = torch.mean(weight * loss0, dim=1).mean(dim=1)
+        # print('loss2 is', loss2)
+        # print('loss2 is.size', loss2.size())
+        value_loss = torch.mean(loss1)
+        #value_loss = loss.mean()
         #value_loss = advantages.pow(2).mean()
 
         action_loss = -(advantages.detach() * action_log_probs).mean()
