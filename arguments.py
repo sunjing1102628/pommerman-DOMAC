@@ -13,7 +13,7 @@ def get_args():
                         help='learning rate step schedule (default: None)')
     parser.add_argument('--eps', type=float, default=1e-5,
                         help='RMSprop optimizer epsilon (default: 1e-5)')
-    parser.add_argument("--num-quant", type=str, default=5, help="numbers of the quant")
+    parser.add_argument("--num-quant", type=str, default=10, help="numbers of the quant")
     parser.add_argument('--alpha', type=float, default=0.99,
                         help='RMSprop optimizer apha (default: 0.99)')
     parser.add_argument('--gamma', type=float, default=0.99,
