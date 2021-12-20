@@ -278,7 +278,7 @@ def _team_partial_fast_env():
 
 
 def make_env(config):
-    print('!!')
+   
     #training_agent = TrainingAgent()
     training_agent1 = TrainingAgent()
     training_agent2 = TrainingAgent()
