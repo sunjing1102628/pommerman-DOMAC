@@ -7,8 +7,8 @@ def _flatten_helper(T, N, _tensor):
 
 
 class RolloutStorage(object):
-    def __init__(self, num_steps, num_processes, obs_shape, action_space,num_quant, n_agent,recurrent_hidden_state_size):
-        self.obs = torch.zeros(num_steps + 1, num_processes,n_agent, *obs_shape)
+    def __init__(self, num_steps, num_processes, obs_shape, action_space, num_quant, n_agent, recurrent_hidden_state_size):
+        self.obs = torch.zeros(num_steps + 1, num_processes, n_agent, *obs_shape)
         self.recurrent_hidden_states = torch.zeros(num_steps + 1, num_processes, recurrent_hidden_state_size)
         self.rewards = torch.zeros(num_steps, num_processes, 1)
         self.value_preds = torch.zeros(num_steps + 1,n_agent, num_processes, num_quant)
@@ -18,6 +18,7 @@ class RolloutStorage(object):
             self.actions = torch.zeros(num_steps, num_processes, n_agent).long()
         else:
             self.actions = torch.zeros(num_steps, num_processes, action_space.shape[0])
+
         self.masks = torch.ones(num_steps + 1, num_processes, 1)
 
         self.num_steps = num_steps
@@ -36,6 +37,8 @@ class RolloutStorage(object):
     def insert(self, obs, recurrent_hidden_states, actions, action_log_probs, value_preds, rewards, masks):
         self.obs[self.step + 1].copy_(obs)
         self.recurrent_hidden_states[self.step + 1].copy_(recurrent_hidden_states)
+        # print('self.actions[self.step]',self.actions[self.step])
+        # print('self.actions[self.step]_size', self.actions[self.step].size())
         self.actions[self.step].copy_(actions)
         self.action_log_probs[self.step].copy_(action_log_probs)
         self.value_preds[self.step].copy_(value_preds)
@@ -54,22 +57,20 @@ class RolloutStorage(object):
             self.value_preds[-1] = next_value
             gae = 0
             for step in reversed(range(self.rewards.size(0))):
-                delta = self.rewards[step] + gamma * self.value_preds[step + 1] * self.masks[step + 1] - \
-                        self.value_preds[step]
+                delta = self.rewards[step].repeat(2,1).reshape(2,16,1) + gamma * self.value_preds[step + 1] * self.masks[step + 1].repeat(2,1).reshape(2,16,1) - self.value_preds[step]
                 gae = delta + gamma * tau * self.masks[step + 1] * gae
                 self.returns[step] = gae + self.value_preds[step]
         else:
-            #print('######')
-            self.returns[-1] = next_value #torch.Size([2, 16, 5])
-            #print('self.returns[-1]',self.returns[-1])
+
+
+            self.returns[-1] = next_value #self.returns[-1] tensor([[0.8890]])
 
             #print('range(self.rewards.size(0))',range(self.rewards.size(0))) #range(0, 5)
             for step in reversed(range(self.rewards.size(0))):
-                #print('self.returns[step + 1]',self.returns[step + 1])
 
                 self.returns[step] = self.returns[step + 1] * \
-                    gamma * self.masks[step + 1].repeat(2,1).reshape(2,16,1) + self.rewards[step].repeat(2,1).reshape(2,16,1)
-                #print('self.returns[step]',self.returns[step])
+                    gamma * self.masks[step + 1].repeat(2,1).reshape(2,16,1) +self.rewards[step].repeat(2,1).reshape(2,16,1)
+
 
     def feed_forward_generator(self, advantages, num_mini_batch):
         num_steps, num_processes = self.rewards.size()[0:2]

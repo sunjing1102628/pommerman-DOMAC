@@ -123,43 +123,5 @@ class A2C_Team():
         #print('value_loss.item()', sum(values_loss).item())
         #print('action_loss.item()', sum(action_loss).item())
 
-        '''advantages = rollouts.returns[:-1] - values
-        print('advantages',advantages.size())
-        print('action_log_probs',action_log_probs.size())
-        value_loss = advantages.pow(2).mean()
-
-        action_loss = -(advantages.detach() * action_log_probs).mean()
-        print('action_loss',action_loss)
-        # print('action_loss_size',action_loss.size())
-
-        if self.acktr and self.optimizer.steps % self.optimizer.Ts == 0:
-            # Sampled fisher, see Martens 2014
-            self.actor_critic.zero_grad()
-            pg_fisher_loss = -action_log_probs.mean()
-
-            value_noise = torch.randn(values.size())
-            if values.is_cuda:
-                value_noise = value_noise.cuda()
-
-            sample_values = values + value_noise
-            vf_fisher_loss = -(values - sample_values.detach()).pow(2).mean()
-
-            fisher_loss = pg_fisher_loss + vf_fisher_loss
-            self.optimizer.acc_stats = True
-            fisher_loss.backward(retain_graph=True)
-            self.optimizer.acc_stats = False
-
-        self.optimizer.zero_grad()
-        (value_loss * self.value_loss_coef + action_loss -
-         dist_entropy * self.entropy_coef).backward()
-
-        if self.acktr == False:
-            nn.utils.clip_grad_norm_(self.actor_critic.parameters(),
-                                     self.max_grad_norm)
-
-        self.optimizer.step()
-        print('value_loss.item()',value_loss.item())
-        print('action_loss.item()',action_loss.item())
-        print('dist_entropy.item()',dist_entropy.item())'''
 
         return sum(values_loss).item(), sum(action_loss).item(), sum(dist_entropy), {}

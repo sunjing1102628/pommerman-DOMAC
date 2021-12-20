@@ -170,7 +170,7 @@ class PommNet(NNBase):
             nn.Tanh()
         )
 
-    def forward(self, inputs, rnn_hxs, masks):
+    def forward(self, inputs,ids, rnn_hxs, masks):
 
         inputs_image = inputs[:, :-self.other_shape[0]].view([-1] + self.image_shape)
         inputs_other = inputs[:, -self.other_shape[0]:]
@@ -336,7 +336,7 @@ class CriticNet(NNBase):
 
         x_conv = self.common_conv(inputs_image)
         x_mlp = self.common_mlp(inputs_other)
-        x = torch.cat([ids,x_conv, x_mlp], dim=-1)
+        x = torch.cat([ids, x_conv, x_mlp], dim=-1)
 
 
         if self.is_recurrent:

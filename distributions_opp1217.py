@@ -75,7 +75,7 @@ class Agent_Actor(nn.Module):
             # print('opp_action_dist.repeat(3, 1).reshape(3,16,6)',opp_action_dist.repeat(3, 1).reshape(3,16,6))
             # print('opp_actions',opp_actions)
             opp_action_prob = torch.gather(opp_action_dist.repeat(num_sample, 1).reshape(num_sample, len(x), 6), dim=1,
-                                           index=opp_actions)
+                                           index=opp_actions.to(x.device))
             # print('opp_action_prob',opp_action_prob)
             # print('opp_action',opp_actions)
             # print('opp_action.size',opp_action.size())

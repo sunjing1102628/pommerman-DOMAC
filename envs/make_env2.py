@@ -42,7 +42,7 @@ device = torch.device("cuda:0" if args.cuda else "cpu")
 def make_env( env_id, seed, rank, log_dir=None, add_timestep=False, allow_early_resets=False):
     def _thunk():
         if env_id.startswith("Pomme"):
-            print('env_id_make_env2',env_id)
+
             env = envs.pommerman2.make_env(env_id)
 
         elif env_id.startswith("dm"):
@@ -58,8 +58,7 @@ def make_env( env_id, seed, rank, log_dir=None, add_timestep=False, allow_early_
 
 
         obs_shape= env.observation_space.shape
-        #obs_shape1 = env.observation_space.shape
-        print('obs_shape_make_env2',obs_shape)
+
         if add_timestep and len(
                 obs_shape) == 1 and str(env).find('TimeLimit') > -1:
             env = AddTimestep(env)
@@ -83,8 +82,7 @@ def make_env( env_id, seed, rank, log_dir=None, add_timestep=False, allow_early_
 
 def make_vec_envs(env_name, seed, num_processes, gamma, no_norm, num_stack,
                   log_dir=None, add_timestep=False, device='cpu', allow_early_resets=False, eval=False):
-    print('!!!')
-    print('env_name_make_env2',env_name)
+
 
     envs = [make_env(env_name, seed, i, log_dir, add_timestep, allow_early_resets)
                 for i in range(num_processes)]
@@ -148,7 +146,7 @@ class TransposeImage(gym.ObservationWrapper):
 class VecPyTorch(VecEnvWrapper):
 
     def __init__(self, venv, device):
-        print('venv_type',type(venv))
+
         """Return only every `skip`-th frame"""
         super(VecPyTorch, self).__init__(venv)
         self.device = device
