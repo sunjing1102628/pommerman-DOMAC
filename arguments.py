@@ -5,23 +5,29 @@ import torch
 
 def get_args():
     parser = argparse.ArgumentParser(description='RL')
-    parser.add_argument('--algo', default='qra2c',
-                        help='algorithm to use: a2c | qra2c | ppo | acktr')
+    parser.add_argument('--algo', default='a2c',
+                        help='algorithm to use: a2c|sa2c | ppo | acktr')
     parser.add_argument('--lr', type=float, default=2.5e-4,
                         help='learning rate (default: 2.5e-4)')
+    parser.add_argument("--num-quant", type=str, default=5, help="numbers of the quant")
+    parser.add_argument("--state-dim", type=str, default=1092, help="numbers of the state dim")
+    parser.add_argument("--action-dim", type=str, default=6, help="numbers of the action dim")
+    parser.add_argument("--target_update_interval", type=int, default=20,
+                        help="update target network once every time this many episodes are completed")
+    parser.add_argument("--lr-actor", type=float, default=3e-4, help="learning rate of actor")
+    parser.add_argument("--lr-critic", type=float, default=1e-3, help="learning rate of critic")
+    parser.add_argument("--n-agents", type=str, default=2, help="numbers of the agents")
+    parser.add_argument("--opp-agents", type=str, default=2, help="numbers of the agents")
     parser.add_argument('--lr-schedule', type=float, default=None,
                         help='learning rate step schedule (default: None)')
     parser.add_argument('--eps', type=float, default=1e-5,
                         help='RMSprop optimizer epsilon (default: 1e-5)')
-    parser.add_argument("--num-quant", type=str, default=10, help="numbers of the quant")
     parser.add_argument('--alpha', type=float, default=0.99,
                         help='RMSprop optimizer apha (default: 0.99)')
     parser.add_argument('--gamma', type=float, default=0.99,
                         help='discount factor for rewards (default: 0.99)')
     parser.add_argument('--use-gae', action='store_true', default=False,
                         help='use generalized advantage estimation')
-    parser.add_argument("--opp-agents", type=str, default=3, help="numbers of the agents")
-
     parser.add_argument('--tau', type=float, default=0.95,
                         help='gae parameter (default: 0.95)')
     parser.add_argument('--entropy-coef', type=float, default=0.01,
@@ -54,6 +60,8 @@ def get_args():
                         help='value loss coefficient (default: 0.01)')
     parser.add_argument('--num-stack', type=int, default=1,
                         help='number of frames to stack (default: 1)')
+    # parser.add_argument('--update-interval', type=int, default=10,
+    #                     help='log interval, one log per n updates (default: 10)')
     parser.add_argument('--log-interval', type=int, default=10,
                         help='log interval, one log per n updates (default: 10)')
     parser.add_argument('--save-interval', type=int, default=100,
@@ -64,14 +72,20 @@ def get_args():
                         help='vis interval, one log per n updates (default: 100)')
     parser.add_argument('--num-frames', type=int, default=5e7,
                         help='number of frames to train (default: 5e7)')
-    parser.add_argument('--env-name', default='PommeFFACompetitionFast-v0',
-                        help='environment to train on (default: PongNoFrameskip-v4)')
+    parser.add_argument('--env-name', default='PommeTeamCompetitionFast-v01',
+                        help='environment to train on (default: PommeFFACompetitionFast-v0)')
     parser.add_argument('--log-dir', default='/tmp/gym/',
                         help='directory to save agent logs (default: /tmp/gym)')
+
     parser.add_argument('--save-dir', default='./trained_models/',
                         help='directory to save agent logs (default: ./trained_models/)')
+    parser.add_argument("--save-rate", type=int, default=200000,
+                        help="save model once every time this many episodes are completed")
     parser.add_argument('--no-cuda', action='store_true', default=False,
                         help='disables CUDA training')
+    parser.add_argument("--model-dir", type=str, default="",
+                        help="directory in which training state and model are loaded")
+
     parser.add_argument('--add-timestep', action='store_true', default=False,
                         help='add timestep to observations')
     parser.add_argument('--recurrent-policy', action='store_true', default=False,
