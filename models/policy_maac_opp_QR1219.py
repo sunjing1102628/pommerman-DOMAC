@@ -52,7 +52,7 @@ class Policy(nn.Module):
 
             batch_size = len(input_critic[agent_id])
 
-            ids = (torch.ones(batch_size) * agent_id).view(-1, 1)
+            ids = (torch.ones(batch_size) * agent_id).view(-1, 1).to(inputs.device)
 
             value_act = self.nn_critic(input_critic, ids, rnn_hxs, masks)
             value1.append(value_act)
@@ -78,7 +78,7 @@ class Policy(nn.Module):
         for agent_id in range(self.agent_num):
             input_critic = inputs.transpose(0, 1).to(inputs.device)
             batch_size = len(input_critic[agent_id])
-            ids = (torch.ones(batch_size) * agent_id).view(-1, 1)
+            ids = (torch.ones(batch_size) * agent_id).view(-1, 1).to(inputs.device)
 
             value_act = self.nn_critic(input_critic, ids, rnn_hxs, masks)
 
@@ -95,7 +95,7 @@ class Policy(nn.Module):
         for agent_id in range(self.agent_num):
             input_critic = inputs.transpose(0, 1).to(inputs.device)
             batch_size = len(input_critic[agent_id])
-            ids = (torch.ones(batch_size) * agent_id).view(-1, 1)
+            ids = (torch.ones(batch_size) * agent_id).view(-1, 1).to(inputs.device)
 
             value_act = self.nn_critic(input_critic, ids, rnn_hxs, masks)
             value1.append(value_act)
