@@ -108,7 +108,7 @@ def featurize(obs, agent_id, config):
 
 
 class PommermanEnvWrapper(gym.Wrapper):
-    print('*****')
+    #print('*****')
     def __init__(self, env=None, feature_config=DEFAULT_FEATURE_CONFIG):
         super(PommermanEnvWrapper, self).__init__(env)
 
