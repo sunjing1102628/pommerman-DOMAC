@@ -336,7 +336,7 @@ class CriticNet(NNBase):
 
         x_conv = self.common_conv(inputs_image)
         x_mlp = self.common_mlp(inputs_other)
-        x = torch.cat([ids, x_conv, x_mlp], dim=-1)
+        x = torch.cat([x_conv, x_mlp], dim=-1)
 
 
         if self.is_recurrent:
