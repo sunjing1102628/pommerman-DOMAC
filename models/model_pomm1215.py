@@ -313,11 +313,11 @@ class CriticNet(NNBase):
 
 
         self.critic = nn.Sequential(
-            nn.Linear(1+hidden_size + hidden_size//4, num_quant),
+            nn.Linear(hidden_size + hidden_size//4, num_quant),
             nn.Tanh()
         )
 
-    def forward(self, inputs, ids ,rnn_hxs, masks):
+    def forward(self, inputs, rnn_hxs, masks):
         # print('inputs.size',inputs.size())
         # print('inputs[0]',inputs[0].size())
 

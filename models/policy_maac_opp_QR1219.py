@@ -50,11 +50,8 @@ class Policy(nn.Module):
         for agent_id in range(self.agent_num):
             input_critic = inputs.transpose(0, 1).to(inputs.device)  # torch.Size([2, 16, 1092])
 
-            batch_size = len(input_critic[agent_id])
 
-            ids = (torch.ones(batch_size) * agent_id).view(-1, 1).to(inputs.device)
-
-            value_act = self.nn_critic(input_critic, ids, rnn_hxs, masks)
+            value_act = self.nn_critic(input_critic, rnn_hxs, masks)
             value1.append(value_act)
             actor_features, rnn_hxs = self.nn_actor(input_critic[agent_id], rnn_hxs, masks)
             dist = self.dist(actor_features)
@@ -77,10 +74,8 @@ class Policy(nn.Module):
         value1 = []
         for agent_id in range(self.agent_num):
             input_critic = inputs.transpose(0, 1).to(inputs.device)
-            batch_size = len(input_critic[agent_id])
-            ids = (torch.ones(batch_size) * agent_id).view(-1, 1).to(inputs.device)
 
-            value_act = self.nn_critic(input_critic, ids, rnn_hxs, masks)
+            value_act = self.nn_critic(input_critic, rnn_hxs, masks)
 
             value1.append(value_act)
         value = torch.cat(value1, dim=-1).reshape(self.agent_num,len(value1[0]),self.num_quant)  # torch.Size([16, 2])
@@ -94,10 +89,8 @@ class Policy(nn.Module):
         dist_entropy = []
         for agent_id in range(self.agent_num):
             input_critic = inputs.transpose(0, 1).to(inputs.device)
-            batch_size = len(input_critic[agent_id])
-            ids = (torch.ones(batch_size) * agent_id).view(-1, 1).to(inputs.device)
 
-            value_act = self.nn_critic(input_critic, ids, rnn_hxs, masks)
+            value_act = self.nn_critic(input_critic,  rnn_hxs, masks)
             value1.append(value_act)
             actor_features, rnn_hxs = self.nn_actor(input_critic[agent_id], rnn_hxs, masks)
             #print('act_fea', actor_features.size())
