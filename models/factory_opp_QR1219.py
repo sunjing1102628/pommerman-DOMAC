@@ -21,6 +21,7 @@ def create_policy(obs_space, action_space,agent_num, num_quant,opp_agents, name=
             **nn_kwargs)
         nn2 = CriticNet(
              obs_shape=obs_shape,
+             agent_num=agent_num,
              num_quant =num_quant,
              **nn_kwargs)
     else:

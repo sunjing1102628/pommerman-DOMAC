@@ -64,7 +64,7 @@ class Agent_Actor(nn.Module):
             opp_action_dist = opp_actor(x)
             # print('opp_action_dist',opp_action_dist)
 
-            num_sample = 18
+            num_sample = 20
 
             opp_actions = torch.zeros(num_sample, len(x), 1).long()
             for i in range(num_sample):
@@ -74,7 +74,7 @@ class Agent_Actor(nn.Module):
             # print('opp_action_dist.repeat(3, 1)',opp_action_dist.repeat(3, 1))
             # print('opp_action_dist.repeat(3, 1).reshape(3,16,6)',opp_action_dist.repeat(3, 1).reshape(3,16,6))
             # print('opp_actions',opp_actions)
-            opp_action_prob = torch.gather(opp_action_dist.repeat(num_sample, 1).reshape(num_sample, len(x), 6), dim=1,
+            opp_action_prob = torch.gather(opp_action_dist.repeat(num_sample, 1).reshape(num_sample, len(x), 6), dim=-1,
                                            index=opp_actions.to(x.device))
             # print('opp_action_prob',opp_action_prob)
             # print('opp_action',opp_actions)

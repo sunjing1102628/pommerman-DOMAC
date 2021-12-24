@@ -266,7 +266,7 @@ class ActorNet(NNBase):
 
 class CriticNet(NNBase):
 
-    def __init__(self, obs_shape,num_quant, recurrent=False, hidden_size=512, batch_norm=True, cnn_config='conv4'):
+    def __init__(self, obs_shape,agent_num,num_quant, recurrent=False, hidden_size=512, batch_norm=True, cnn_config='conv4'):
         super(CriticNet, self).__init__(recurrent, hidden_size, hidden_size)
         self.obs_shape = obs_shape  # (1092,)
         self.num_quant = num_quant
@@ -282,12 +282,12 @@ class CriticNet(NNBase):
         input_channels = (obs_shape[0] - self.other_shape[0]) // (bs * bs)  # 9
         # print('input_channels',input_channels)
         self.image_shape1 = [input_channels, bs, bs]
-        self.image_shape = [2*input_channels, bs, bs]  # [9, 11, 11]
+        self.image_shape = [agent_num*input_channels, bs, bs]  # [9, 11, 11]
         # print('self.image_shape',self.image_shape)
         # print('np.prod(obs_shape)',np.prod(obs_shape))
         # print('np.prod(self.image_shape)',np.prod(self.image_shape))
 
-        assert np.prod(2*obs_shape) >= np.prod(self.image_shape)
+        assert np.prod(agent_num*obs_shape) >= np.prod(self.image_shape)
 
         if cnn_config == 'conv3':
 
@@ -304,7 +304,7 @@ class CriticNet(NNBase):
                 batch_norm=batch_norm)
 
         self.common_mlp = nn.Sequential(
-            nn.Linear(2*self.other_shape[0], hidden_size // 4),
+            nn.Linear(agent_num*self.other_shape[0], hidden_size // 4),
             nn.ReLU(),
             nn.Linear(hidden_size // 4, hidden_size // 4),
             nn.ReLU()
@@ -313,11 +313,11 @@ class CriticNet(NNBase):
 
 
         self.critic = nn.Sequential(
-            nn.Linear(hidden_size + hidden_size//4, num_quant),
+            nn.Linear(1+agent_num+hidden_size + hidden_size//4, num_quant),
             nn.Tanh()
         )
 
-    def forward(self, inputs, rnn_hxs, masks):
+    def forward(self, inputs, ids, rnn_hxs, masks,actions):
         # print('inputs.size',inputs.size())
         # print('inputs[0]',inputs[0].size())
 
@@ -336,7 +336,8 @@ class CriticNet(NNBase):
 
         x_conv = self.common_conv(inputs_image)
         x_mlp = self.common_mlp(inputs_other)
-        x = torch.cat([x_conv, x_mlp], dim=-1)
+        x1 = torch.cat([ids, actions], dim=-1)
+        x = torch.cat([x1,x_conv, x_mlp], dim=-1)
 
 
         if self.is_recurrent:

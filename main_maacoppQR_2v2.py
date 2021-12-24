@@ -181,7 +181,8 @@ def main():
         with torch.no_grad():
             next_value = actor_critic.get_value(rollouts.obs[-1],
                                                 rollouts.recurrent_hidden_states[-1],
-                                                rollouts.masks[-1]).detach()
+                                                rollouts.masks[-1],
+                                                rollouts.actions[-1]).detach()
 
         rollouts.compute_returns(next_value, args.use_gae, args.gamma, args.tau)
 
@@ -211,6 +212,9 @@ def main():
 
         if j % args.log_interval == 0 and len(episode_rewards) > 1:
             end = time.time()
+            print('episode_rewards',episode_rewards)
+            print('value_loss',value_loss)
+            print('action_loss',action_loss)
             print("Updates {}, num timesteps {}, FPS {}, last {} mean/median reward {:.1f}/{:.1f}, "
                   "min / max reward {:.1f}/{:.1f}, value/action loss {:.5f}/{:.5f}".
                   format(j, total_num_steps,

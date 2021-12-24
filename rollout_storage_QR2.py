@@ -57,20 +57,21 @@ class RolloutStorage(object):
             self.value_preds[-1] = next_value
             gae = 0
             for step in reversed(range(self.rewards.size(0))):
-                delta = self.rewards[step].repeat(2,1).reshape(2,16,1) + gamma * self.value_preds[step + 1] * self.masks[step + 1].repeat(2,1).reshape(2,16,1) - self.value_preds[step]
-                gae = delta + gamma * tau * self.masks[step + 1] * gae
-                self.returns[step] = gae + self.value_preds[step]
+                for i in range(len(next_value)):
+                    delta = self.rewards[step] + gamma * self.value_preds[step + 1][i] * self.masks[step + 1] - \
+                            self.value_preds[step][i]
+                    gae = delta + gamma * tau * self.masks[step + 1] * gae
+                    self.returns[step][i] = gae + self.value_preds[step][i]
         else:
 
+            self.returns[-1] = next_value  # self.returns[-1] tensor([[0.8890]])
 
-            self.returns[-1] = next_value #self.returns[-1] tensor([[0.8890]])
-
-            #print('range(self.rewards.size(0))',range(self.rewards.size(0))) #range(0, 5)
+            # print('range(self.rewards.size(0))',range(self.rewards.size(0))) #range(0, 5)
             for step in reversed(range(self.rewards.size(0))):
 
-                self.returns[step] = self.returns[step + 1] * \
-                    gamma * self.masks[step + 1].repeat(2,1).reshape(2,16,1) +self.rewards[step].repeat(2,1).reshape(2,16,1)
-
+                for i in range(len(next_value)):
+                    self.returns[step][i] = self.returns[step + 1][i] * \
+                                            gamma * self.masks[step + 1] + self.rewards[step]
 
     def feed_forward_generator(self, advantages, num_mini_batch):
         num_steps, num_processes = self.rewards.size()[0:2]

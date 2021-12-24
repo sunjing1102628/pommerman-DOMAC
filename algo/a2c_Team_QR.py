@@ -48,80 +48,52 @@ class A2C_Team():
         num_steps, num_processes, _ = rollouts.rewards.size()
         tau = torch.Tensor((2 * np.arange(num_quant) + 1) / (2.0 * num_quant)).view(1, -1, 1).to(
             rollouts.actions.device)
-
-        values,action_log_probs, dist_entropy, _ = self.actor_critic.evaluate_actions(
-            rollouts.obs[:-1].view(-1, *obs_shape),
-            rollouts.recurrent_hidden_states[0].view(-1, self.actor_critic.recurrent_hidden_state_size),
-            rollouts.masks[:-1].view(-1, 1),
-            rollouts.actions.view(-1, action_shape))
-        #print('values11',values) #torch.Size([2, 80, 5])
-        #print('values11.size',values.size())
-        values = values.view(2, num_steps, num_processes, num_quant)
-        #print('values.size',values)
-        action_log_probs = action_log_probs.view(num_steps, num_processes, 2)
-        #print('dist_entropy',dist_entropy) # [tensor(1.7918, grad_fn=<MeanBackward0>), tensor(1.7918, grad_fn=<MeanBackward0>)]
-
-        values_loss =[]
-        action_loss =[]
         for i in range(self.agent_num):
+            values, action_log_probs, dist_entropy, _ = self.actor_critic.evaluate_actions(i,
+                  rollouts.obs[:-1].view(-1,*obs_shape),
+                  rollouts.recurrent_hidden_states[0].view(-1,self.actor_critic.recurrent_hidden_state_size),
+                  rollouts.masks[:-1].view(-1, 1),
+                  rollouts.actions.view(-1,action_shape))
+            values = values.view(num_steps, num_processes, num_quant)
+            action_log_probs = action_log_probs.view(num_steps, num_processes, 1)
+            advantages = rollouts.returns[:-1][:, i] - values
+            theta = values.unsqueeze(3)
 
-
-            advantages = rollouts.returns[:-1][:,i] - values[i] #torch.Size([5, 16, 5])
-
-            theta = values[i].unsqueeze(3) #torch.Size([5, 16, 5, 1])
-
-            Theta = rollouts.returns[:-1][:,i].unsqueeze(2) #torch.Size([5, 16, 1, 5])
+            Theta = rollouts.returns[:-1][:, i].unsqueeze(2)
 
             u = Theta - theta
-            #print('tau',tau) #torch.Size([1, 5, 1])
-
-            #print('u.le(0.)',u.le(0.).size())
-            weight = torch.abs(tau - u.le(0.).float())#torch.Size([5, 16, 5, 5])
+            weight = torch.abs(tau - u.le(0.).float())
             loss0 = F.smooth_l1_loss(theta, Theta.detach(), reduction='none')
-            #print('loss0', loss0) #torch.Size([5, 16, 5, 5])
-            loss2 = torch.mean(weight * loss0, dim=1).mean(dim=1)
-           # print('loss2 is', loss2) #torch.Size([5, 5])
-            value_loss0 = torch.mean(loss2) #value_loss0 tensor(0.0021, grad_fn=<MeanBackward0>)
+            loss1 = torch.mean(weight * loss0, dim=1).mean(dim=1)
+            value_loss = torch.mean(loss1)
+            action_loss = -(advantages.detach() * action_log_probs).mean()
 
-            values_loss.append(value_loss0)
-            #print('action_log_probs[:,:,i]', action_log_probs[:,:,i].unsqueeze(-1).size()) #torch.Size([5, 16, 1])
-            #print('advantages',advantages.size()) #torch.Size([5, 16, 5])
+            if self.acktr and self.optimizer.steps % self.optimizer.Ts == 0:
+                # print('asktr')
+                # Sampled fisher, see Martens 2014
+                self.actor_critic.zero_grad()
+                pg_fisher_loss = -action_log_probs.mean()
 
-            action_loss0 = -(advantages.detach() * action_log_probs[:,:,i].unsqueeze(-1)).mean()
-            action_loss.append(action_loss0)
+                value_noise = torch.randn(values.size())
+                if values.is_cuda:
+                    value_noise = value_noise.cuda()
 
+                sample_values = values + value_noise
+                vf_fisher_loss = -(values - sample_values.detach()).pow(2).mean()
 
-        #print('val_loss',sum(values_loss))
-        #print('action_loss',sum(action_loss))
-        if self.acktr and self.optimizer.steps % self.optimizer.Ts == 0:
-            #print('asktr')
-            # Sampled fisher, see Martens 2014
-            self.actor_critic.zero_grad()
-            pg_fisher_loss = -action_log_probs.mean()
+                fisher_loss = pg_fisher_loss + vf_fisher_loss
+                self.optimizer.acc_stats = True
+                fisher_loss.backward(retain_graph=True)
+                self.optimizer.acc_stats = False
 
-            value_noise = torch.randn(values.size())
-            if values.is_cuda:
-                value_noise = value_noise.cuda()
+            self.optimizer.zero_grad()
+            (value_loss * self.value_loss_coef + action_loss -
+             dist_entropy * self.entropy_coef).backward()
 
-            sample_values = values + value_noise
-            vf_fisher_loss = -(values - sample_values.detach()).pow(2).mean()
+            if self.acktr == False:
+                nn.utils.clip_grad_norm_(self.actor_critic.parameters(),
+                                         self.max_grad_norm)
 
-            fisher_loss = pg_fisher_loss + vf_fisher_loss
-            self.optimizer.acc_stats = True
-            fisher_loss.backward(retain_graph=True)
-            self.optimizer.acc_stats = False
+            self.optimizer.step()
 
-        self.optimizer.zero_grad()
-        (sum(values_loss) * self.value_loss_coef + sum(action_loss) -
-         sum(dist_entropy) * self.entropy_coef).backward()
-
-        if self.acktr == False:
-            nn.utils.clip_grad_norm_(self.actor_critic.parameters(),
-                                     self.max_grad_norm)
-
-        self.optimizer.step()
-        #print('value_loss.item()', sum(values_loss).item())
-        #print('action_loss.item()', sum(action_loss).item())
-
-
-        return sum(values_loss).item(), sum(action_loss).item(), sum(dist_entropy), {}
+        return value_loss.item(), action_loss.item(), dist_entropy.item(), {}
