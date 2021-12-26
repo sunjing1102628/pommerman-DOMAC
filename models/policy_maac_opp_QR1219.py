@@ -91,7 +91,7 @@ class Policy(nn.Module):
 
         return value
 
-    def evaluate_actions(self, agent_id,inputs, rnn_hxs, masks, action):
+    def evaluate_actions(self, agent_id, inputs, rnn_hxs, masks, action):
 
         input_critic = inputs.transpose(0, 1).to(inputs.device)
         batch_size = len(input_critic[0])

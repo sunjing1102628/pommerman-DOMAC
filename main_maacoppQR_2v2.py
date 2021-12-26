@@ -92,7 +92,7 @@ def main():
 
 
     if args.algo.startswith('a2c'):
-        agent = algo.A2C_Team(
+        agent = algo.A2C_TeamQR(
             actor_critic, args.value_loss_coef,
             args.entropy_coef,
             lr=args.lr, lr_schedule=lr_update_schedule,
