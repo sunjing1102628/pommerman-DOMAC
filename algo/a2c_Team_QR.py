@@ -5,7 +5,7 @@ import numpy as np
 from .kfac import KFACOptimizer
 import torch.nn.functional as F
 
-class A2C_Team():
+class A2C_TeamQR():
     def __init__(self,
                  actor_critic,
                  value_loss_coef,
