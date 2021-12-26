@@ -3,7 +3,7 @@ import torch.nn as nn
 from distributions_opp1217 import Agent_Actor
 from torch.distributions import Categorical
 
-
+import numpy as np
 
 
 
@@ -60,27 +60,35 @@ class Policy(nn.Module):
             action_log_probs1.append(action_log_probs_act)
         action = torch.cat(action1, dim=-1)  # torch.size([16,2])
         action_log_probs = torch.cat(action_log_probs1, dim=-1)  # action_log_probs torch.Size([16, 2])
-        value1=[]
+        value1 = []
         for agent_id in range(self.agent_num):
             batch_size = len(input_critic[agent_id])
             ids = (torch.ones(batch_size) * agent_id).view(-1, 1).to(inputs.device)
-
             value0 = self.nn_critic(input_critic, ids, rnn_hxs, masks, action)  # torch.Size([16, 5])
-            value1.append(value0)
 
-        value= torch.cat(value1,dim= 0).reshape(self.agent_num,len(value1[0]),self.num_quant)
+            action_taken = action.type(torch.long)[:, agent_id].reshape(-1, 1)
+            value_taken = value0[np.arange(len(value0)), action_taken.squeeze(-1)]
+
+            value1.append(value_taken)
+
+        value = torch.cat(value1, dim=0).reshape(self.agent_num, len(value1[0]), 5)
 
         return value, action, action_log_probs, rnn_hxs
 
-    def get_value(self, inputs, rnn_hxs, masks,actions):
+    def get_value(self, inputs, rnn_hxs, masks, actions):
         value1 = []
         input_critic = inputs.transpose(0, 1).to(inputs.device)
         for agent_id in range(self.agent_num):
             batch_size = len(input_critic[agent_id])
             ids = (torch.ones(batch_size) * agent_id).view(-1, 1).to(inputs.device)
             value_act = self.nn_critic(input_critic, ids, rnn_hxs, masks, actions)
-            value1.append(value_act)
+
+            value_taken = value_act[np.arange(len(value_act)), value_act.mean(2).max(1)[1]]
+
+            value1.append(value_taken)
+
         value = torch.cat(value1, dim=0).reshape(self.agent_num, len(value1[0]), 5)
+
         return value
 
     def evaluate_actions(self, agent_id,inputs, rnn_hxs, masks, action):
@@ -96,7 +104,8 @@ class Policy(nn.Module):
         action_log_probs = torch.log(torch.gather(action_probs, dim=1, index=action_taken))
 
         dist_entropy = Categorical(logits=action_probs).entropy().mean()
+        value_taken = value[np.arange(len(value)), action_taken.squeeze(-1)]
 
 
 
-        return value, action_log_probs, dist_entropy, rnn_hxs
+        return value_taken, action_log_probs, dist_entropy, rnn_hxs

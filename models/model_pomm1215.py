@@ -266,7 +266,7 @@ class ActorNet(NNBase):
 
 class CriticNet(NNBase):
 
-    def __init__(self, obs_shape,agent_num,num_quant, recurrent=False, hidden_size=512, batch_norm=True, cnn_config='conv4'):
+    def __init__(self, obs_shape,action_num,agent_num,num_quant, recurrent=False, hidden_size=512, batch_norm=True, cnn_config='conv4'):
         super(CriticNet, self).__init__(recurrent, hidden_size, hidden_size)
         self.obs_shape = obs_shape  # (1092,)
         self.num_quant = num_quant
@@ -313,7 +313,7 @@ class CriticNet(NNBase):
 
 
         self.critic = nn.Sequential(
-            nn.Linear(1+agent_num+hidden_size + hidden_size//4, num_quant),
+            nn.Linear(1+agent_num+hidden_size + hidden_size//4, action_num*num_quant),
             nn.Tanh()
         )
 
@@ -344,4 +344,4 @@ class CriticNet(NNBase):
             x, rnn_hxs = self._forward_gru(x, rnn_hxs, masks)
         out_value = self.critic(x)
         #print('out_value',out_value.size())
-        return out_value
+        return out_value.view(-1, self.num_actions, self.num_quant)

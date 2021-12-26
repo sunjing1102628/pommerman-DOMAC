@@ -8,6 +8,7 @@ def create_policy(obs_space, action_space,agent_num, num_quant,opp_agents, name=
     # print('create_policy!')
     nn = None
     obs_shape = obs_space.shape
+    action_num = action_space.n
     if name.lower() == 'basic':
         if len(obs_shape) == 3:
             nn = CNNBase(obs_shape[0], **nn_kwargs)
@@ -21,6 +22,7 @@ def create_policy(obs_space, action_space,agent_num, num_quant,opp_agents, name=
             **nn_kwargs)
         nn2 = CriticNet(
              obs_shape=obs_shape,
+             action_num=action_num,
              agent_num=agent_num,
              num_quant =num_quant,
              **nn_kwargs)
