@@ -270,7 +270,7 @@ class CriticNet(NNBase):
         super(CriticNet, self).__init__(recurrent, hidden_size, hidden_size)
         self.obs_shape = obs_shape  # (1092,)
         self.num_quant = num_quant
-        # self.action_shape= action_shape
+        self.num_actions= action_num
         # print('self.action_shape',action_shape)
         # print('PommNet!!!!')
 
