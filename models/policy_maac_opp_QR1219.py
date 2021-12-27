@@ -4,6 +4,15 @@ from distributions_opp1217 import Agent_Actor
 from torch.distributions import Categorical
 
 import numpy as np
+FixedCategorical = torch.distributions.Categorical
+
+old_sample = FixedCategorical.sample
+FixedCategorical.sample = lambda self: old_sample(self)
+
+log_prob_cat = FixedCategorical.log_prob
+FixedCategorical.log_probs = lambda self, actions: log_prob_cat(self, actions.squeeze(-1)).unsqueeze(-1)
+
+FixedCategorical.mode = lambda self: self.probs.argmax(dim=1, keepdim=True)
 
 
 
@@ -49,19 +58,22 @@ class Policy(nn.Module):
         for agent_id in range(self.agent_num):
             input_critic = inputs.transpose(0, 1).to(inputs.device)  # torch.Size([2, 16, 1092])
             actor_features, rnn_hxs = self.nn_actor(input_critic[agent_id], rnn_hxs, masks)
-            dist = self.dist(actor_features)
+            action_prob = self.dist(actor_features)
+
+            dist = FixedCategorical(logits=action_prob)  # Categorical(logits: torch.Size([16, 6]))
             if deterministic:
-                action_act = dist.argmax(dim=1, keepdim=True)
+                action_act = dist.mode()
             else:
-                action_act = Categorical(dist).sample()
-            action_log_probs_act = torch.log(torch.gather(dist, dim=1, index=action_act))
-            _ = Categorical(dist).entropy().mean()
+                action_act = dist.sample()  # torch.size([16,2])
+            action_log_probs_act = dist.log_probs(action_act)
             action1.append(action_act)
             action_log_probs1.append(action_log_probs_act)
+            _ = dist.entropy().mean()
         action = torch.cat(action1, dim=-1)  # torch.size([16,2])
         action_log_probs = torch.cat(action_log_probs1, dim=-1)  # action_log_probs torch.Size([16, 2])
         value1 = []
         for agent_id in range(self.agent_num):
+            input_critic = inputs.transpose(0, 1).to(inputs.device)
             batch_size = len(input_critic[agent_id])
             ids = (torch.ones(batch_size) * agent_id).view(-1, 1).to(inputs.device)
             value0 = self.nn_critic(input_critic, ids, rnn_hxs, masks, action)  # torch.Size([16, 5])
@@ -100,10 +112,11 @@ class Policy(nn.Module):
 
         actor_features, rnn_hxs = self.nn_actor(input_critic[agent_id], rnn_hxs, masks)
         action_probs = self.dist(actor_features)
-        action_taken = action.type(torch.long)[:, agent_id].reshape(-1, 1)
-        action_log_probs = torch.log(torch.gather(action_probs, dim=1, index=action_taken))
 
-        dist_entropy = Categorical(logits=action_probs).entropy().mean()
+        dist = FixedCategorical(logits=action_probs)
+        action_taken = action.type(torch.long)[:, agent_id].reshape(-1, 1)
+        action_log_probs = dist.log_probs(action_taken)
+        dist_entropy = dist.entropy().mean()
         value_taken = value[np.arange(len(value)), action_taken.squeeze(-1)]
 
 
