@@ -64,7 +64,7 @@ class Agent_Actor(nn.Module):
             opp_action_dist = opp_actor(x)
             # print('opp_action_dist',opp_action_dist)
 
-            num_sample = 20
+            num_sample = 25
             opp_actions = torch.zeros(len(x), num_sample).long()
             opp_actions_prob = []
             for i in range(num_sample):
