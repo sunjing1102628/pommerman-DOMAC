@@ -7,7 +7,7 @@ def get_args():
     parser = argparse.ArgumentParser(description='RL')
     parser.add_argument('--algo', default='a2c',
                         help='algorithm to use: a2c|sa2c | ppo | acktr')
-    parser.add_argument('--lr', type=float, default=1e-4,
+    parser.add_argument('--lr', type=float, default=5e-5,
                         help='learning rate (default: 2.5e-4)')
     parser.add_argument("--num-quant", type=str, default=5, help="numbers of the quant")
     parser.add_argument("--state-dim", type=str, default=1092, help="numbers of the state dim")
