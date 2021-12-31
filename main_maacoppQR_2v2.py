@@ -256,8 +256,8 @@ def main():
                   format(j, np.mean(eval_episode_rewards)))
             print(" Evaluation using {} episodes: mean reward {:.5f}\n".
                   format(len(eval_episode_rewards), np.mean(eval_episode_rewards)))
-        np.savetxt('./results/final_results2v2_opp25QR5_5e5/train_score_seed_{}.csv'.format(42), np.array(log),
-                   delimiter=";")
+        np.savetxt('./results/final_results2v2_opp30QR5_1e5/train_score_seed_{}.csv'.format(42), np.array(log),
+                  delimiter=";")
 
         '''if args.vis and j % args.vis_interval == 0:
             try:

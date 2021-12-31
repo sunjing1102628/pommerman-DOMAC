@@ -64,16 +64,18 @@ class Agent_Actor(nn.Module):
             opp_action_dist = opp_actor(x)
             # print('opp_action_dist',opp_action_dist)
 
-            num_sample = 25
+            num_sample = 30
             opp_actions = torch.zeros(len(x), num_sample).long()
             opp_actions_prob = []
             for i in range(num_sample):
-                opp_action = torch.distributions.Categorical(opp_action_dist).sample()
-                opp_action_prob0 = torch.gather(opp_action_dist, dim=-1, index=opp_action)
+                opp_action = torch.distributions.Categorical(opp_action_dist).sample()   #torch.Size([16, 1])
+
+                opp_action_prob0 = torch.gather(opp_action_dist, dim=-1, index=opp_action) #torch.Size([16, 1])
 
                 opp_actions_prob.append(opp_action_prob0)
                 opp_actions[:, i].copy_(opp_action.squeeze(-1))
             opp_action_prob = torch.cat(opp_actions_prob, dim=-1)
+
             opp_actions0.append(opp_actions)
 
             opp_actions_probs0.append(opp_action_prob)
@@ -85,7 +87,7 @@ class Agent_Actor(nn.Module):
         opp_actions_probs3 = opp_actions_probs2.reshape(len(x), 1, num_sample) #opp_actions_probs3 torch.Size([16, 1, 18])
 
         opp_actions2 = torch.cat(opp_actions0, dim=1).reshape(len(x), 2, num_sample).transpose(-1, -2)#torch.Size([3, 5, 2])
-
+        #print('opp_actions2',opp_actions2)
 
 
         opp_actions_num = torch.nn.functional.one_hot(opp_actions2, 6).view(len(x), num_sample, 12).to(x.device)
