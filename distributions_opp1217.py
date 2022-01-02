@@ -71,7 +71,7 @@ class Agent_Actor(nn.Module):
                 opp_action = torch.distributions.Categorical(opp_action_dist).sample()   #torch.Size([16, 1])
                 opp_actions[:, i].copy_(opp_action.squeeze(-1))
 
-            opp_action_prob = torch.gather(opp_action_dist, dim=-1, index=opp_actions)
+            opp_action_prob = torch.gather(opp_action_dist, dim=-1, index=opp_actions.to(x.device))
 
             opp_actions0.append(opp_actions)
 
