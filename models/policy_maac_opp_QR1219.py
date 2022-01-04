@@ -83,7 +83,7 @@ class Policy(nn.Module):
 
             value1.append(value_taken)
 
-        value = torch.cat(value1, dim=0).reshape(self.agent_num, len(value1[0]), 5)
+        value = torch.cat(value1, dim=0).reshape(self.agent_num, len(value1[0]), self.num_quant)
 
         return value, action, action_log_probs, rnn_hxs
 
@@ -99,7 +99,7 @@ class Policy(nn.Module):
 
             value1.append(value_taken)
 
-        value = torch.cat(value1, dim=0).reshape(self.agent_num, len(value1[0]), 5)
+        value = torch.cat(value1, dim=0).reshape(self.agent_num, len(value1[0]), self.num_quant)
 
         return value
 
