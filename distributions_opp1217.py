@@ -64,7 +64,7 @@ class Agent_Actor(nn.Module):
             opp_action_dist = opp_actor(x)
             # print('opp_action_dist',opp_action_dist)
 
-            num_sample = 25
+            num_sample = 30
             opp_actions = torch.zeros(len(x), num_sample).long()
             #opp_actions_sam =[]
 
@@ -74,7 +74,7 @@ class Agent_Actor(nn.Module):
                 #opp_actions_sam.append(opp_action)
 
             #opp_actions = torch.hstack(opp_actions_sam)
-        
+
             opp_action_prob = torch.gather(opp_action_dist, dim=-1, index=opp_actions.to(x.device))
 
             opp_actions0.append(opp_actions)
