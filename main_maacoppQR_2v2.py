@@ -212,7 +212,7 @@ def main():
 
         if j % args.log_interval == 0 and len(episode_rewards) > 1:
             end = time.time()
-            print('evl100')
+            
             print('episode_rewards',episode_rewards)
             print('value_loss',value_loss)
             print('action_loss',action_loss)
