@@ -212,7 +212,7 @@ def main():
 
         if j % args.log_interval == 0 and len(episode_rewards) > 1:
             end = time.time()
-            
+
             print('episode_rewards',episode_rewards)
             print('value_loss',value_loss)
             print('action_loss',action_loss)
@@ -240,7 +240,7 @@ def main():
                                                        actor_critic.recurrent_hidden_state_size, device=device)
             eval_masks = torch.zeros(args.num_processes, 1, device=device)
 
-            while len(eval_episode_rewards) < 100:
+            while len(eval_episode_rewards) < 200:
                 with torch.no_grad():
                     _, action, _, eval_recurrent_hidden_states = actor_critic.act(
                         obs, eval_recurrent_hidden_states, eval_masks, deterministic=True)
@@ -257,7 +257,7 @@ def main():
                   format(j, np.mean(eval_episode_rewards)))
             print(" Evaluation using {} episodes: mean reward {:.5f}\n".
                   format(len(eval_episode_rewards), np.mean(eval_episode_rewards)))
-        np.savetxt('./results/final_results2v2_opp25QR5_2.5e5new1_0112/train_score_seed_{}.csv'.format(42), np.array(log),
+        np.savetxt('./results/final_results2v2_opp25QR5_2.5e5new1_evl200/train_score_seed_{}.csv'.format(42), np.array(log),
                   delimiter=";")
 
         '''if args.vis and j % args.vis_interval == 0:
