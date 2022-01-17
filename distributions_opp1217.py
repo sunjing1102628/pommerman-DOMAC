@@ -58,11 +58,12 @@ class Agent_Actor(nn.Module):
         # print('x is',len(x))
         opp_actions0 = []
         opp_actions_probs0 = []
+        evl_oppaction_prob = []
 
         for opp_actor in self.opp_actors:
             #print('!')
             opp_action_dist = opp_actor(x)
-            # print('opp_action_dist',opp_action_dist)
+            evl_oppaction_prob.append(opp_action_dist)
 
             num_sample = 25
             opp_actions = torch.zeros(len(x), num_sample).long()
@@ -108,6 +109,6 @@ class Agent_Actor(nn.Module):
 
         #print('actions_probs.size', actions_probs.size())
 
-        return actions_probs
+        return actions_probs,evl_oppaction_prob
 
 

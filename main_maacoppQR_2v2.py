@@ -7,7 +7,7 @@ from collections import deque
 from tqdm import tqdm
 import numpy as np
 import torch
-
+import torch.nn as nn
 import algo
 from arguments import get_args
 from envs.make_env2 import make_vec_envs
@@ -145,6 +145,7 @@ def main():
 
     episode_rewards = deque(maxlen=10)
     log = []
+    log_acc=[]
 
 
     start = time.time()
@@ -153,13 +154,15 @@ def main():
             #print('args.num_steps',args.num_steps)
             # Sample actions
             with torch.no_grad():
-                value, action, action_log_prob, recurrent_hidden_states = actor_critic.act(
+                value, action, action_log_prob,opp_action_probs, recurrent_hidden_states = actor_critic.act(
                     rollouts.obs[step],
                     rollouts.recurrent_hidden_states[step],
                     rollouts.masks[step])
 
             # Obser reward and next obs
-            obs, reward, done, infos = train_envs.step(action)
+            obs, reward, done, infos,true_opp = train_envs.step(action)
+
+
 
             for info in infos:
                 if 'episode' in info.keys():
@@ -242,23 +245,39 @@ def main():
 
             while len(eval_episode_rewards) < 200:
                 with torch.no_grad():
-                    _, action, _, eval_recurrent_hidden_states = actor_critic.act(
+                    _, action, _, evl_opp_action_probs,eval_recurrent_hidden_states = actor_critic.act(
                         obs, eval_recurrent_hidden_states, eval_masks, deterministic=True)
 
                 # Obser reward and next obs
-                obs, reward, done, infos = eval_envs.step(action)
+                obs, reward, done, infos, evl_true_opp = eval_envs.step(action)
+                CL_loss = []
+                loss = nn.CrossEntropyLoss()
+                for i in range(2):
+                    input_opp = evl_opp_action_probs[i]
+                    print('input_opp', input_opp)
+                    print('input_opp', input_opp.size())
+                    target_opp = evl_true_opp[:, i]
+                    print('target_opp', target_opp)
+                    print(target_opp.size())
+                    loss0 = loss(input_opp, target_opp)
+                    CL_loss.append(loss0)
+
                 eval_masks = torch.tensor([[0.0] if done_ else [1.0] for done_ in done], device=device)
                 for info in infos:
                     if 'episode' in info.keys():
                         eval_episode_rewards.append(info['episode']['r'])
 
-            log.append([j, np.mean(eval_episode_rewards)])
+            #log.append([j, np.mean(eval_episode_rewards)])
+            log_acc.append([j, sum(CL_loss)/2])
             print(" using {} episodes: mean reward {:.5f}\n".
                   format(j, np.mean(eval_episode_rewards)))
             print(" Evaluation using {} episodes: mean reward {:.5f}\n".
                   format(len(eval_episode_rewards), np.mean(eval_episode_rewards)))
-        np.savetxt('./results/final_results2v2_opp25QR5_2.5e5new1_evl200/train_score_seed_{}.csv'.format(42), np.array(log),
-                  delimiter=";")
+        #np.savetxt('./results/final_results2v2_opp25QR5_2.5e5new1_evl200/train_score_seed_{}.csv'.format(42), np.array(log),
+        #          delimiter=";")
+        np.savetxt('./results/final_results2v2_opp25QR5_2.5e5acc_evl200/train_score_seed_{}.csv'.format(42),
+                   np.array(log_acc),
+                   delimiter=";")
 
         '''if args.vis and j % args.vis_interval == 0:
             try:

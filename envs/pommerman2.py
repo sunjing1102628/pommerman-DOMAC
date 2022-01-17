@@ -141,6 +141,7 @@ class PommermanEnvWrapper(gym.Wrapper):
         obs = self.env.get_observations()
 
         all_actions = actions.tolist()
+        true_opp=self.env.act(obs)
 
         all_actions += self.env.act(obs) #[2, 4, 5, 5]
 
@@ -182,7 +183,7 @@ class PommermanEnvWrapper(gym.Wrapper):
 
 
 
-        return agent_state, agent_reward[0], done, {}
+        return agent_state, agent_reward[0], done, {},true_opp
 
     def reset(self):
         #print('test_pom2')

@@ -58,7 +58,7 @@ class Policy(nn.Module):
         for agent_id in range(self.agent_num):
             input_critic = inputs.transpose(0, 1).to(inputs.device)  # torch.Size([2, 16, 1092])
             actor_features, rnn_hxs = self.nn_actor(input_critic[agent_id], rnn_hxs, masks)
-            action_prob = self.dist(actor_features)
+            action_prob,opp_action_probs = self.dist(actor_features)
 
             dist = FixedCategorical(logits=action_prob)  # Categorical(logits: torch.Size([16, 6]))
             if deterministic:
@@ -85,7 +85,7 @@ class Policy(nn.Module):
 
         value = torch.cat(value1, dim=0).reshape(self.agent_num, len(value1[0]), self.num_quant)
 
-        return value, action, action_log_probs, rnn_hxs
+        return value, action, action_log_probs,opp_action_probs, rnn_hxs
 
     def get_value(self, inputs, rnn_hxs, masks, actions):
         value1 = []
@@ -111,7 +111,7 @@ class Policy(nn.Module):
         value = self.nn_critic(input_critic, ids, rnn_hxs, masks, action)
 
         actor_features, rnn_hxs = self.nn_actor(input_critic[agent_id], rnn_hxs, masks)
-        action_probs = self.dist(actor_features)
+        action_probs,_ = self.dist(actor_features)
 
         dist = FixedCategorical(logits=action_probs)
         action_taken = action.type(torch.long)[:, agent_id].reshape(-1, 1)
