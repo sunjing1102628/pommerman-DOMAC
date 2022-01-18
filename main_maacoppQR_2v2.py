@@ -254,11 +254,11 @@ def main():
                 loss = nn.CrossEntropyLoss()
                 for i in range(2):
                     input_opp = evl_opp_action_probs[i]
-                    print('input_opp', input_opp)
-                    print('input_opp', input_opp.size())
+                    #print('input_opp', input_opp)
+                    #print('input_opp', input_opp.size())
                     target_opp = evl_true_opp[:, i]
-                    print('target_opp', target_opp)
-                    print(target_opp.size())
+                    #print('target_opp', target_opp)
+                    #print(target_opp.size())
                     loss0 = loss(input_opp, target_opp)
                     CL_loss.append(loss0)
 
