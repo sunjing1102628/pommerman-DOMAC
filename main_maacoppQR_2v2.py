@@ -278,6 +278,8 @@ def main():
             eval_episode_rewards_std = np.array(eval_episode_rewards).std()
             log_std.append([j, eval_episode_rewards_std])
             #log eval_acc mean and std
+            print('acc_evl',acc)
+            print('acc_mean',np.mean(acc))
             log_acc_mean.append([j, np.mean(acc)])
             eval_acc_std = np.array(acc).std()
             log_acc_std.append([j,eval_acc_std])
