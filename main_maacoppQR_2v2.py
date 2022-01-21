@@ -301,6 +301,12 @@ def main():
         np.savetxt('./results/final_results_Teamnew_lr2.5e5evl200_maacoppQR/train_dist_entropystd_seed_{}.csv'.format(42),
                    np.array(log_dist_entropy_std),
                    delimiter=";")
+        np.savetxt('./results/final_results_Teamnew_lr2.5e5evl200_maacoppQR/train_acc_seed_{}.csv'.format(42),
+            np.array(log_acc_mean),
+            delimiter=";")
+        np.savetxt('./results/final_results_Teamnew_lr2.5e5evl200_maacoppQR/train_accstd_seed_{}.csv'.format(42),
+            np.array(log_acc_std),
+            delimiter=";")
 
         '''if args.vis and j % args.vis_interval == 0:
             try:
