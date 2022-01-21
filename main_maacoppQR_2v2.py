@@ -215,7 +215,7 @@ def main():
             save_model = [save_model.state_dict(),
                           hasattr(train_envs.venv, 'ob_rms') and train_envs.venv.ob_rms or None]
 
-            torch.save(save_model, os.path.join(save_path, args.env_name + ".pt"))
+            torch.save(save_model, os.path.join(save_path, args.env_name + '_' +str(j)+ ".pt"))
 
         total_num_steps = (j + 1) * update_factor
 
