@@ -56,10 +56,11 @@ class Policy(nn.Module):
         action_log_probs1 = []
         action1 = []
         dist_entropy_act = []
+        opp_dist_entropy_act = []
         for agent_id in range(self.agent_num):
             input_critic = inputs.transpose(0, 1).to(inputs.device)  # torch.Size([2, 16, 1092])
             actor_features, rnn_hxs = self.nn_actor(input_critic[agent_id], rnn_hxs, masks)
-            action_prob,opp_action_probs = self.dist(actor_features)
+            action_prob,opp_action_probs,opp_actions_entropy = self.dist(actor_features)
 
             dist = FixedCategorical(logits=action_prob)  # Categorical(logits: torch.Size([16, 6]))
             if deterministic:
@@ -72,7 +73,9 @@ class Policy(nn.Module):
             #_ = dist.entropy().mean()
             dist_entropy_act1 = dist.entropy().mean()
             dist_entropy_act.append(dist_entropy_act1)
+            opp_dist_entropy_act.append(opp_actions_entropy)
         dist_entropy = sum(dist_entropy_act) / 2
+        opp_dist_entropy = sum(opp_dist_entropy_act) / 2
         action = torch.cat(action1, dim=-1)  # torch.size([16,2])
         action_log_probs = torch.cat(action_log_probs1, dim=-1)  # action_log_probs torch.Size([16, 2])
         value1 = []
@@ -89,7 +92,7 @@ class Policy(nn.Module):
 
         value = torch.cat(value1, dim=0).reshape(self.agent_num, len(value1[0]), self.num_quant)
 
-        return value, action, action_log_probs,dist_entropy,opp_action_probs, rnn_hxs
+        return value, action, action_log_probs,dist_entropy,opp_action_probs,opp_dist_entropy, rnn_hxs
 
     def get_value(self, inputs, rnn_hxs, masks, actions):
         value1 = []
@@ -115,7 +118,7 @@ class Policy(nn.Module):
         value = self.nn_critic(input_critic, ids, rnn_hxs, masks, action)
 
         actor_features, rnn_hxs = self.nn_actor(input_critic[agent_id], rnn_hxs, masks)
-        action_probs,_ = self.dist(actor_features)
+        action_probs,_,_ = self.dist(actor_features)
 
         dist = FixedCategorical(logits=action_probs)
         action_taken = action.type(torch.long)[:, agent_id].reshape(-1, 1)

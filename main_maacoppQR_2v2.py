@@ -150,6 +150,8 @@ def main():
     log_dist_entropy_std = []
     log_acc_mean=[]
     log_acc_std=[]
+    log_opp_dist_entropy=[]
+    log_opp_dist_entropy_std=[]
 
 
     start = time.time()
@@ -158,7 +160,7 @@ def main():
             #print('args.num_steps',args.num_steps)
             # Sample actions
             with torch.no_grad():
-                value, action, action_log_prob,_,opp_action_probs, recurrent_hidden_states = actor_critic.act(
+                value, action, action_log_prob,_,_, _, recurrent_hidden_states = actor_critic.act(
                     rollouts.obs[step],
                     rollouts.recurrent_hidden_states[step],
                     rollouts.masks[step])
@@ -242,17 +244,20 @@ def main():
         if args.eval_interval and len(episode_rewards) > 1 and j > 0 and j % args.eval_interval == 0:
             eval_episode_rewards = []
             eval_dist_entropy = []
+            eval_opp_dist_entropy = []
+            acc = []
 
             obs = eval_envs.reset()
             eval_recurrent_hidden_states = torch.zeros(args.num_processes,
                                                        actor_critic.recurrent_hidden_state_size, device=device)
             eval_masks = torch.zeros(args.num_processes, 1, device=device)
-            acc=[]
+
             while len(eval_episode_rewards) < 200:
                 with torch.no_grad():
-                    _, action, _, eval_dist_entropy1,evl_opp_action_probs,eval_recurrent_hidden_states = actor_critic.act(
+                    _, action, _, eval_dist_entropy1,evl_opp_action_probs,eval_opp_dist_entropy1,eval_recurrent_hidden_states = actor_critic.act(
                         obs, eval_recurrent_hidden_states, eval_masks, deterministic=True)
                     eval_dist_entropy.append(eval_dist_entropy1.tolist())
+                    eval_opp_dist_entropy.append(eval_opp_dist_entropy1.tolist())
 
                 # Obser reward and next obs
                 obs, reward, done, infos, evl_true_opp = eval_envs.step(action)
@@ -268,7 +273,8 @@ def main():
                     loss0 = loss(input_opp, target_opp)
 
                     CL_loss.append(loss0)
-                acc.append(sum(CL_loss)/2)
+                CL_loss1= sum(CL_loss)/2
+                acc.append(CL_loss1.tolist())
                 eval_masks = torch.tensor([[0.0] if done_ else [1.0] for done_ in done], device=device)
                 for info in infos:
                     if 'episode' in info.keys():
@@ -278,8 +284,7 @@ def main():
             eval_episode_rewards_std = np.array(eval_episode_rewards).std()
             log_std.append([j, eval_episode_rewards_std])
             #log eval_acc mean and std
-            print('acc_evl',acc)
-            print('acc_mean',np.mean(acc))
+
             log_acc_mean.append([j, np.mean(acc)])
             eval_acc_std = np.array(acc).std()
             log_acc_std.append([j,eval_acc_std])
@@ -287,6 +292,11 @@ def main():
             log_dist_entropy.append([j, np.mean(eval_dist_entropy)])
             eval_dist_entropy_std = np.array(eval_dist_entropy).std()
             log_dist_entropy_std.append([j, eval_dist_entropy_std])
+            # log eval_opp_dist_entropy mean and std
+            log_opp_dist_entropy.append([j, np.mean(eval_opp_dist_entropy)])
+            eval_opp_entropy_std = np.array(eval_opp_dist_entropy).std()
+            log_opp_dist_entropy_std.append([j, eval_opp_entropy_std])
+
             print(" using {} episodes: mean reward {:.5f}\n".
                   format(j, np.mean(eval_episode_rewards)))
             print(" Evaluation using {} episodes: mean reward {:.5f}\n".
@@ -309,6 +319,13 @@ def main():
         np.savetxt('./results/final_results_Teamnew_lr2.5e5evl200_maacoppQR/train_accstd_seed_{}.csv'.format(42),
             np.array(log_acc_std),
             delimiter=";")
+        np.savetxt('./results/final_results_Teamnew_lr2.5e5evl200_maacoppQR/train_oppentropy_seed_{}.csv'.format(42),
+                   np.array(log_opp_dist_entropy),
+                   delimiter=";")
+        np.savetxt('./results/final_results_Teamnew_lr2.5e5evl200_maacoppQR/train_oppentropystd_seed_{}.csv'.format(42),
+                   np.array(log_opp_dist_entropy_std),
+                   delimiter=";")
+
 
         '''if args.vis and j % args.vis_interval == 0:
             try:
