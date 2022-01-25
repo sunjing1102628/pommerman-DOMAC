@@ -56,8 +56,14 @@ class Agent_Actor(nn.Module):
     def forward(self, x):
         opp_actions0 = []
         opp_actions_probs0 = []
+        evl_oppaction_prob = []
+        opp_actions_entropy = []
         for opp_actor in self.opp_actors:
             opp_action_dist = opp_actor(x)
+            dist_entropy = torch.distributions.Categorical(opp_action_dist).entropy().mean()
+            opp_actions_entropy.append(dist_entropy)
+            evl_oppaction_prob.append(opp_action_dist)
+
             num_sample = 80
             opp_actions = torch.zeros(num_sample, len(x),1).long()
             for i in range(num_sample):
@@ -90,7 +96,7 @@ class Agent_Actor(nn.Module):
         # print('actions_probs',actions_probs)
         # print('actions_probs',actions_probs.size())
 
-        return actions_probs
+        return actions_probs,evl_oppaction_prob,sum(opp_actions_entropy)/3
 
 
 

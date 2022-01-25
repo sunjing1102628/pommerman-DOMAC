@@ -132,6 +132,7 @@ class PommermanEnvWrapper(gym.Wrapper):
     def step(self, actions):
         obs = self.env.get_observations()
         all_actions = [actions]
+        true_opp = self.env.act(obs)
         all_actions += self.env.act(obs)
         state, reward, done, _ = self.env.step(all_actions)
         if not self.feature_config:
@@ -142,7 +143,7 @@ class PommermanEnvWrapper(gym.Wrapper):
                 self.env.training_agent,
                     self.feature_config)
         agent_reward = reward[self.env.training_agent]
-        return agent_state, agent_reward, done, {}
+        return agent_state, agent_reward, done, {},true_opp
 
     def reset(self):
         obs = self.env.reset()

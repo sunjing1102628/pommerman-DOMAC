@@ -36,10 +36,11 @@ class Policy(nn.Module):
     def act(self, inputs, rnn_hxs, masks,deterministic=False):
         #print('act!!!!')
         #print('inputs',inputs)
+
         value, actor_features, rnn_hxs = self.nn(inputs, rnn_hxs, masks)
         #print('actor_features',actor_features)
         value, actor_features, rnn_hxs = self.nn(inputs, rnn_hxs, masks)
-        dist = self.dist(actor_features)
+        dist,opp_action_probs,opp_actions_entropy = self.dist(actor_features)
         # print('dist',dist)
         if deterministic:
             action = dist.argmax(dim=1, keepdim=True)
@@ -51,10 +52,10 @@ class Policy(nn.Module):
         #action_log_probs = dist.log_probs(action)  # action_log_probs0 tensor([[-1.7920]])
         # print('action_log_probs',action_log_probs)
 
-        _ = Categorical(dist).entropy().mean()
+        dist_entropy = Categorical(dist).entropy().mean()
 
 
-        return value, action, action_log_probs, rnn_hxs
+        return value, action, action_log_probs, dist_entropy,opp_action_probs,opp_actions_entropy,rnn_hxs
 
     def get_value(self, inputs, rnn_hxs, masks):
         # print('get_value!!!')
@@ -67,7 +68,7 @@ class Policy(nn.Module):
 
         value, actor_features, rnn_hxs = self.nn(inputs, rnn_hxs, masks)
         # print('value_eval is',value)
-        actions_prob = self.dist(actor_features)
+        actions_prob,_,_ = self.dist(actor_features)
         # print('actions_prob',actions_prob)
         # print('action000 is',action)
         action_log_probs=torch.log(torch.gather(actions_prob, dim=1, index=action))
