@@ -52,10 +52,10 @@ def main():
     torch.set_num_threads(1)
     device = torch.device("cuda:0" if args.cuda else "cpu")
 
-    if args.vis:
+    '''if args.vis:
         from visdom import Visdom
         viz = Visdom(port=args.port)
-        win = None
+        win = None'''
 
     train_envs = make_vec_envs(
         args.env_name, args.seed, args.num_processes, args.gamma, args.no_norm, args.num_stack,

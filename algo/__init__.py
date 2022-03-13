@@ -4,3 +4,4 @@ from .a2c_Team_QR import A2C_TeamQR
 from .a2c_team import A2C_Team
 from .ppo import PPO
 from .sil import SIL
+from .a2c_coma import coma

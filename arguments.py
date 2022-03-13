@@ -16,8 +16,8 @@ def get_args():
                         help="update target network once every time this many episodes are completed")
     parser.add_argument("--lr-actor", type=float, default=3e-4, help="learning rate of actor")
     parser.add_argument("--lr-critic", type=float, default=1e-3, help="learning rate of critic")
-    parser.add_argument("--n-agents", type=str, default=2, help="numbers of the agents")
-    parser.add_argument("--opp-agents", type=str, default=2, help="numbers of the agents")
+    parser.add_argument("--n-agents", type=str, default=1, help="numbers of the agents")
+    parser.add_argument("--opp-agents", type=str, default=3, help="numbers of the agents")
     parser.add_argument('--lr-schedule', type=float, default=None,
                         help='learning rate step schedule (default: None)')
     parser.add_argument('--eps', type=float, default=1e-5,
@@ -72,7 +72,7 @@ def get_args():
                         help='vis interval, one log per n updates (default: 100)')
     parser.add_argument('--num-frames', type=int, default=5e7,
                         help='number of frames to train (default: 5e7)')
-    parser.add_argument('--env-name', default='PommeTeamCompetitionFast-v01',
+    parser.add_argument('--env-name', default='PommeFFACompetitionFast-v0',
                         help='environment to train on (default: PommeFFACompetitionFast-v0)')
     parser.add_argument('--log-dir', default='/tmp/gym/',
                         help='directory to save agent logs (default: /tmp/gym)')

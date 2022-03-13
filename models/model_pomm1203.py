@@ -291,7 +291,7 @@ class CriticNet(NNBase):
         #self.actor = nn.Linear(hidden_size + hidden_size // 4, hidden_size)
 
         self.critic = nn.Sequential(
-            nn.Linear(hidden_size + hidden_size//4, 1),
+            nn.Linear(hidden_size + hidden_size//4, 6),
             nn.Tanh()
         )
 
