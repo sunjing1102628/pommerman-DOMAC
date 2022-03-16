@@ -276,7 +276,7 @@ def main():
                     eval_dist_entropy.append(eval_dist_entropy1.tolist())
 
                 # Obser reward and next obs
-                obs, reward, done, infos = eval_envs.step(action)
+                obs, reward, done, infos,_ = eval_envs.step(action)
 
                 eval_masks = torch.tensor([[0.0] if done_ else [1.0] for done_ in done], device=device)
                 for info in infos:
