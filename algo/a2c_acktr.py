@@ -46,15 +46,12 @@ class A2C_ACKTR():
         num_steps, num_processes, _ = rollouts.rewards.size()
         #print('num_steps',num_steps)
 
-        action_log_probs, dist_entropy, _ = self.actor_critic.evaluate_actions(
+        values, action_log_probs, dist_entropy, _ = self.actor_critic.evaluate_actions(
             rollouts.obs[:-1].view(-1, *obs_shape),
             rollouts.recurrent_hidden_states[0].view(-1, self.actor_critic.recurrent_hidden_state_size),
             rollouts.masks[:-1].view(-1, 1),
             rollouts.actions.view(-1, action_shape))
-        values= self.actor_critic.get_value(rollouts.obs[:-1].view(-1, *obs_shape),
-            rollouts.recurrent_hidden_states[0].view(-1, self.actor_critic.recurrent_hidden_state_size),
-            rollouts.masks[:-1].view(-1, 1),
-        )
+
 
         values = values.view(num_steps, num_processes, 1)
         #print('values.size',values.size())

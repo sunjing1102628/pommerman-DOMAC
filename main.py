@@ -11,7 +11,7 @@ import torch
 import algo
 from arguments import get_args
 from envs import make_vec_envs
-from models import create_policy
+from models.factory import create_policy
 from rollout_storage import RolloutStorage
 from replay_storage import ReplayStorage
 from visualize import visdom_plot
@@ -52,10 +52,10 @@ def main():
     torch.set_num_threads(1)
     device = torch.device("cuda:0" if args.cuda else "cpu")
 
-    if args.vis:
+    '''if args.vis:
         from visdom import Visdom
         viz = Visdom(port=args.port)
-        win = None
+        win = None'''
 
     train_envs = make_vec_envs(
         args.env_name, args.seed, args.num_processes, args.gamma, args.no_norm, args.num_stack,
@@ -138,6 +138,7 @@ def main():
 
     episode_rewards = deque(maxlen=10)
     log=[]
+    log_std = []
     
     start = time.time()
     for j in range(num_updates):
@@ -150,7 +151,7 @@ def main():
                         rollouts.masks[step])
 
             # Obser reward and next obs
-            obs, reward, done, infos = train_envs.step(action)
+            obs, reward, done, infos,_ = train_envs.step(action)
 
             for info in infos:
                 if 'episode' in info.keys():
@@ -223,23 +224,28 @@ def main():
                             actor_critic.recurrent_hidden_state_size, device=device)
             eval_masks = torch.zeros(args.num_processes, 1, device=device)
 
-            while len(eval_episode_rewards) < 50:
+            while len(eval_episode_rewards) < 200:
                 with torch.no_grad():
                     _, action, _, eval_recurrent_hidden_states = actor_critic.act(
                         obs, eval_recurrent_hidden_states, eval_masks, deterministic=True)
 
                 # Obser reward and next obs
-                obs, reward, done, infos = eval_envs.step(action)
+                obs, reward, done, infos,_ = eval_envs.step(action)
                 eval_masks = torch.tensor([[0.0] if done_ else [1.0] for done_ in done], device=device)
                 for info in infos:
                     if 'episode' in info.keys():
                         eval_episode_rewards.append(info['episode']['r'])
             log.append([j, np.mean(eval_episode_rewards)])
+            eval_episode_rewards_std = np.array(eval_episode_rewards).std()
+            log_std.append([j, eval_episode_rewards_std])
             print(" using {} episodes: mean reward {:.5f}\n".
                   format(j, np.mean(eval_episode_rewards)))
             print(" Evaluation using {} episodes: mean reward {:.5f}\n".
                   format(len(eval_episode_rewards), np.mean(eval_episode_rewards)))
-        np.savetxt('./results/final_results1202/train_score_seed_{}.csv'.format(42), np.array(log),
+        np.savetxt('./results/final_result_maacoff/train_score_seed_{}.csv'.format(42), np.array(log),
+                   delimiter=";")
+        np.savetxt('./results/final_result_maacoff/train_scorestd_seed_{}.csv'.format(42),
+                   np.array(log_std),
                    delimiter=";")
             #print(" Evaluation using {} episodes: mean reward {:.5f}\n".
             #    format(len(eval_episode_rewards), np.mean(eval_episode_rewards)))
