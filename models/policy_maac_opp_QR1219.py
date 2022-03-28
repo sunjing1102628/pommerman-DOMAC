@@ -128,4 +128,4 @@ class Policy(nn.Module):
 
 
 
-        return value_taken, action_log_probs, dist_entropy, rnn_hxs
+        return value, value_taken, action_probs, action_log_probs, dist_entropy, rnn_hxs
