@@ -61,11 +61,12 @@ class comaqr_team():
             action_prob = action_prob.view(num_steps, num_processes, 6)
             action_log_probs = action_log_probs.view(num_steps, num_processes, 1)
             baseline = torch.sum(action_prob * values, dim=-1).detach()
-            value_taken=value_taken.view(num_steps, num_processes,num_quant)
+            value_taken1=value_taken.mean(-1).view(num_steps, num_processes,1)
 
-            advantages1 = value_taken - baseline.view(num_steps, num_processes, 1)
+            advantages1 = value_taken1 - baseline.view(num_steps, num_processes, 1)
 
             #advantages = rollouts.returns[:-1][:,i] - values
+            value_taken = value_taken.view(num_steps, num_processes, num_quant)
             theta = value_taken.unsqueeze(3)
 
             Theta = rollouts.returns[:-1][:,i].unsqueeze(2)
