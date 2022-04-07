@@ -242,9 +242,9 @@ def main():
                   format(j, np.mean(eval_episode_rewards)))
             print(" Evaluation using {} episodes: mean reward {:.5f}\n".
                   format(len(eval_episode_rewards), np.mean(eval_episode_rewards)))
-        np.savetxt('./results/final_result_maacoff/train_score_seed_{}.csv'.format(42), np.array(log),
+        np.savetxt('./results/ppoFFA/train_score_seed_{}.csv'.format(42), np.array(log),
                    delimiter=";")
-        np.savetxt('./results/final_result_maacoff/train_scorestd_seed_{}.csv'.format(42),
+        np.savetxt('./results/ppoFFA/train_scorestd_seed_{}.csv'.format(42),
                    np.array(log_std),
                    delimiter=";")
             #print(" Evaluation using {} episodes: mean reward {:.5f}\n".
