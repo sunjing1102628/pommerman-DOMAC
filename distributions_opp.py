@@ -69,7 +69,7 @@ class Agent_Actor(nn.Module):
             for i in range(num_sample):
                 opp_action = torch.distributions.Categorical(opp_action_dist).sample()
                 opp_actions[i].copy_(opp_action)
-            opp_action_prob = torch.gather(opp_action_dist.repeat(num_sample, 1).reshape(num_sample, len(x), 6), dim=1,
+            opp_action_prob = torch.gather(opp_action_dist.repeat(num_sample, 1).reshape(num_sample, len(x), 6), dim=2,
                                            index=opp_actions.to(x.device))
             opp_actions0.append(opp_actions.squeeze().t())
             opp_actions_probs0.append(opp_action_prob.squeeze().t())
