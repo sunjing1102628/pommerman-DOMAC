@@ -1,7 +1,7 @@
-FROM nvidia/cuda:11.0-cudnn8-devel-ubuntu18.04
+FROM nvidia/cuda:11.1-cudnn8-devel-ubuntu20.04
 
 # pay attention ARG "cuda_ver" should match base image above
-ARG cuda_ver=cu110
+ARG cuda_ver=cu111
 
 # python 3.8.1
 ARG miniconda_ver=Miniconda3-py38_4.8.2-Linux-x86_64.sh
@@ -9,7 +9,7 @@ ARG miniconda_ver=Miniconda3-py38_4.8.2-Linux-x86_64.sh
 ARG project=domac
 ARG username=jsun
 ARG password=jsun
-ARG torch_ver=1.10.2
+ARG torch_ver=1.10.1
 # ARG torchvision_ver=0.8.0
 # ARG torchaudio_ver=0.7.0
 # ARG torch_scatter_ver=2.0.6
@@ -52,7 +52,8 @@ RUN curl -sLo ~/miniconda.sh https://repo.continuum.io/miniconda/${miniconda_ver
 ENV CONDA_AUTO_UPDATE_CONDA=false \
     # add conda to env variables
     PATH=~/${project}-miniconda-environment/bin:$PATH
-RUN git clone https://github.com/MultiAgentLearning/playground ~/playground \
+RUN ~/${project}-miniconda-environment/bin/pip install torch==${torch_ver} torchvision==${torchvision_ver} -f https://download.pytorch.org/whl/${cuda_ver}/torch_stable.html \
+    && git clone https://github.com/MultiAgentLearning/playground ~/playground \
     && cd ~/playground \
     && ~/${project}-miniconda-environment/bin/pip install -U .
 
