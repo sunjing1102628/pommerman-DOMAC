@@ -51,6 +51,7 @@ except OSError:
 def main():
     torch.set_num_threads(1)
     device = torch.device("cuda:0" if args.cuda else "cpu")
+    print('device',device)
 
     '''if args.vis:
         from visdom import Visdom
