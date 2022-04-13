@@ -55,7 +55,7 @@ ENV CONDA_AUTO_UPDATE_CONDA=false \
 RUN ~/${project}-miniconda-environment/bin/pip install torch==${torch_ver} -f https://download.pytorch.org/whl/${cuda_ver}/torch_stable.html \
     && git clone https://github.com/MultiAgentLearning/playground ~/playground \
     && cd ~/playground \
-    && ~/${project}-miniconda-environment/bin/pip install -U .
+    && ~/${project}-miniconda-environment/bin/pip install -U . \
     && apt-get update \
     && apt-get install ffmpeg libsm6 libxext6  -y \
     && ~/${project}-miniconda-environment/bin/pip install opencv-python==4.5.5.62
