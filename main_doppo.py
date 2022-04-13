@@ -14,7 +14,7 @@ from envs import make_vec_envs
 from models.factory_opp_QR import create_policy
 from rollout_storage_QR import RolloutStorage
 from replay_storage import ReplayStorage
-from visualize import visdom_plot
+#from visualize import visdom_plot
 
 args = get_args()
 
