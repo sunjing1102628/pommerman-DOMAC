@@ -52,7 +52,7 @@ RUN curl -sLo ~/miniconda.sh https://repo.continuum.io/miniconda/${miniconda_ver
 ENV CONDA_AUTO_UPDATE_CONDA=false \
     # add conda to env variables
     PATH=~/${project}-miniconda-environment/bin:$PATH
-RUN ~/${project}-miniconda-environment/bin/pip install torch==${torch_ver} torchvision==${torchvision_ver} -f https://download.pytorch.org/whl/${cuda_ver}/torch_stable.html \
+RUN ~/${project}-miniconda-environment/bin/pip install torch==${torch_ver} -f https://download.pytorch.org/whl/${cuda_ver}/torch_stable.html \
     && git clone https://github.com/MultiAgentLearning/playground ~/playground \
     && cd ~/playground \
     && ~/${project}-miniconda-environment/bin/pip install -U .
