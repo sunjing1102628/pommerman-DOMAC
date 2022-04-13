@@ -10,16 +10,10 @@ ARG project=domac
 ARG username=jsun
 ARG password=jsun
 ARG torch_ver=1.10.1
-# ARG torchvision_ver=0.8.0
-# ARG torchaudio_ver=0.7.0
-# ARG torch_scatter_ver=2.0.6
-# ARG torch_sparse_ver=0.6.9
-# ARG pyg_ver=1.7.2
-# ARG matplotlib_ver=3.4.3
-# ARG ortools_ver=9.0.9048
+
 
 # Install some basic utilities and create users
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y ffmpeg libsm6 libxext6 \
     curl \
     ca-certificates \
     sudo \
@@ -56,8 +50,6 @@ RUN ~/${project}-miniconda-environment/bin/pip install torch==${torch_ver} -f ht
     && git clone https://github.com/MultiAgentLearning/playground ~/playground \
     && cd ~/playground \
     && ~/${project}-miniconda-environment/bin/pip install -U . \
-    && apt-get update \
-    && apt-get install ffmpeg libsm6 libxext6  -y \
     && ~/${project}-miniconda-environment/bin/pip install opencv-python==4.5.5.62
 
 
