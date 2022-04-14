@@ -84,12 +84,12 @@ class DPPO():
 
                 #value_loss = F.mse_loss(return_batch, values)
                 #critic loss
-                '''theta = values.unsqueeze(3)
-                print('theta',theta.size())
-                Theta = return_batch.unsqueeze(2)
-                print('Theta',Theta.size())
+                theta = values
+
+                Theta = return_batch.t().unsqueeze(-1)
+
                 u = Theta - theta
-                print('u',u.size())
+
                 weight = torch.abs(tau - u.le(0.).float())
                 loss0 = F.smooth_l1_loss(theta, Theta.detach(), reduction='none')
                 # print('loss0', loss0)
@@ -98,12 +98,12 @@ class DPPO():
                 loss2 = torch.mean(weight * loss0, dim=1).mean(dim=1)
                 # print('loss2 is', loss2)
                 # print('loss2 is.size', loss2.size())
-                value_loss = torch.mean(loss2)'''
-                diff = return_batch.t().unsqueeze(-1) - values
+                value_loss = torch.mean(loss2)
+                #diff = return_batch.t().unsqueeze(-1) - values
 
-                loss = huber(diff) * (tau - (diff.detach() < 0).float()).abs()
+                #loss = huber(diff) * (tau - (diff.detach() < 0).float()).abs()
 
-                value_loss = loss.mean()
+                #value_loss = loss.mean()
 
 
                 self.optimizer.zero_grad()
