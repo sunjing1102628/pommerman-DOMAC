@@ -18,10 +18,15 @@ from replay_storage import ReplayStorage
 
 args = get_args()
 
-assert args.algo in ['a2c', 'a2c-sil', 'ppo', 'ppo-sil', 'acktr']
+'''assert args.algo in ['a2c', 'a2c-sil', 'ppo', 'ppo-sil', 'acktr']
 if args.recurrent_policy:
     assert args.algo in ['a2c', 'ppo'], \
+        'Recurrent policy is not implemented for ACKTR or SIL' '''
+assert args.algo in ['a2c', 'qra2c','a2c-sil', 'ppo', 'dppo','ppo-sil', 'acktr']
+if args.recurrent_policy:
+    assert args.algo in ['a2c','qra2c', 'ppo','dppo'], \
         'Recurrent policy is not implemented for ACKTR or SIL'
+
 
 update_factor = args.num_steps * args.num_processes
 num_updates = int(args.num_frames) // update_factor
@@ -93,8 +98,23 @@ def main():
             lr=args.lr, lr_schedule=lr_update_schedule,
             eps=args.eps, alpha=args.alpha,
             max_grad_norm=args.max_grad_norm)
+    elif args.algo.startswith('qra2c'):
+        # print('!!!')
+        agent = algo.QR_A2C_ACKTR(
+            actor_critic, args.value_loss_coef,
+            args.entropy_coef,
+            lr=args.lr, lr_schedule=lr_update_schedule,
+            eps=args.eps, alpha=args.alpha,
+            max_grad_norm=args.max_grad_norm)
     elif args.algo.startswith('ppo'):
         agent = algo.PPO(
+            actor_critic, args.clip_param, args.ppo_epoch, args.num_mini_batch,
+            args.value_loss_coef, args.entropy_coef,
+            lr=args.lr, lr_schedule=lr_update_schedule,
+            eps=args.eps,
+            max_grad_norm=args.max_grad_norm)
+    elif args.algo.startswith('dppo'):
+        agent = algo.DPPO(
             actor_critic, args.clip_param, args.ppo_epoch, args.num_mini_batch,
             args.value_loss_coef, args.entropy_coef,
             lr=args.lr, lr_schedule=lr_update_schedule,
