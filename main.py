@@ -7,7 +7,7 @@ from collections import deque
 
 import numpy as np
 import torch
-
+from tqdm import tqdm
 import algo
 from arguments import get_args
 from envs import make_vec_envs
@@ -141,7 +141,7 @@ def main():
     log_std = []
     
     start = time.time()
-    for j in range(num_updates):
+    for j in tqdm(range(num_updates)):
         for step in range(args.num_steps):
             # Sample actions
             with torch.no_grad():

@@ -15,7 +15,7 @@ from envs.make_env2 import make_vec_envs
 from models.factory1209 import create_policy
 from rollout_storage2 import RolloutStorage
 from replay_storage import ReplayStorage
-from visualize import visdom_plot
+#from visualize import visdom_plot
 
 args = get_args()
 
@@ -53,10 +53,10 @@ def main():
     torch.set_num_threads(1)
     device = torch.device("cuda:0" if args.cuda else "cpu")
 
-    if args.vis:
+    '''if args.vis:
         from visdom import Visdom
         viz = Visdom(port=args.port)
-        win = None
+        win = None'''
 
     train_envs = make_vec_envs(
         args.env_name, args.seed, args.num_processes, args.gamma, args.no_norm, args.num_stack,
