@@ -70,7 +70,7 @@ def get_args():
                         help='eval interval, one eval per n updates (default: None)')
     parser.add_argument('--vis-interval', type=int, default=100,
                         help='vis interval, one log per n updates (default: 100)')
-    parser.add_argument('--num-frames', type=int, default=5e7,
+    parser.add_argument('--num-frames', type=int, default=5e3,
                         help='number of frames to train (default: 5e7)')
     parser.add_argument('--env-name', default='PommeFFACompetitionFast-v0',
                         help='environment to train on (default: PommeFFACompetitionFast-v0)')
