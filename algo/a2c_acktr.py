@@ -29,6 +29,7 @@ class A2C_ACKTR():
             self.optimizer = KFACOptimizer(actor_critic)
             self.scheduler = None
         else:
+
             self.optimizer = optim.RMSprop(
                 actor_critic.parameters(), lr, eps=eps, alpha=alpha)
             if lr_schedule is not None:
@@ -37,6 +38,7 @@ class A2C_ACKTR():
                 self.scheduler = None
 
     def update(self, rollouts, update_index, replay=None):
+
         if self.scheduler is not None:
             self.scheduler.step(update_index)
 

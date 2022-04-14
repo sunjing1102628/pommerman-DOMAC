@@ -28,7 +28,8 @@ class PPO():
 
         self.max_grad_norm = max_grad_norm
 
-        self.optimizer = optim.Adam(actor_critic.parameters(), lr=lr, eps=eps)
+        #self.optimizer = optim.Adam(actor_critic.parameters(), lr=lr, eps=eps)
+        self.optimizer = optim.RMSprop(actor_critic.parameters(), lr, eps=eps)
         if lr_schedule is not None:
             self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, lr_schedule)
         else:
@@ -65,15 +66,15 @@ class PPO():
                 values, action_log_probs, dist_entropy, states = self.actor_critic.evaluate_actions(
                     obs_batch, recurrent_hidden_states_batch,
                     masks_batch, actions_batch)
-                print('action_log_probs',action_log_probs.device)
+
 
                 ratio = torch.exp(action_log_probs - old_action_log_probs_batch).to(obs_batch.device)
-                print('ratio',ratio.device)
+
                 surr1 = ratio * adv_targ
-                print('surr1',surr1.device)
+
                 surr2 = torch.clamp(ratio, 1.0 - self.clip_param,
                                            1.0 + self.clip_param) * adv_targ
-                print('surr2',surr2.device)
+
                 action_loss = -torch.min(surr1, surr2).mean().to(obs_batch.device)
 
                 value_loss = F.mse_loss(return_batch, values).to(obs_batch.device)
