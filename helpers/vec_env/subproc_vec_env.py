@@ -64,11 +64,11 @@ class SubprocVecEnv(VecEnv):
     def step_wait(self):
         results = [remote.recv() for remote in self.remotes]
         self.waiting = False
-        #obs, rews, dones, infos,true_opp = zip(*results)
-        obs, rews, dones, infos, _ = zip(*results)
+        obs, rews, dones, infos,true_opp = zip(*results)
+        #obs, rews, dones, infos, _ = zip(*results)
         #return np.stack(obs), np.stack(rews), np.stack(dones), infos, np.stack(true_opp)
 
-        return np.stack(obs), np.stack(rews), np.stack(dones), infos, _
+        return np.stack(obs), np.stack(rews), np.stack(dones), infos, np.stack(true_opp)
 
     def reset(self):
         for remote in self.remotes:
