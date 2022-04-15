@@ -351,6 +351,6 @@ if __name__ == "__main__":
     main()
     import cProfile
 
-    cProfile.run('Runner(args, env)', filename='restates')
+    cProfile.run('main()', filename='restates')
 
 

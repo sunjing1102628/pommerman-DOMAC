@@ -43,6 +43,7 @@ class PPO():
         advantages = (advantages - advantages.mean()) / (
             advantages.std() + 1e-5).to(rollouts.returns[:-1].device)
 
+
         value_loss_epoch = 0
         action_loss_epoch = 0
         dist_entropy_epoch = 0
@@ -55,12 +56,12 @@ class PPO():
                 data_generator = rollouts.feed_forward_generator(
                     advantages, self.num_mini_batch)
 
+
             for sample in data_generator:
+
                 obs_batch, recurrent_hidden_states_batch, actions_batch, \
                    return_batch, masks_batch, old_action_log_probs_batch, \
                         adv_targ = sample
-                #print('obs_batch', obs_batch.device)
-                #print('recurrent_hidden_states_batch', recurrent_hidden_states_batch.device)
 
                 # Reshape to do in a single forward pass for all steps
                 values, action_log_probs, dist_entropy, states = self.actor_critic.evaluate_actions(
