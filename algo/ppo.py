@@ -92,10 +92,11 @@ class PPO():
                 action_loss_epoch += action_loss.item()
                 dist_entropy_epoch += dist_entropy.item()
 
-        num_updates = self.ppo_epoch * self.num_mini_batch
+        num_updates = self.ppo_epoch * self.num_mini_batch #64
 
         value_loss_epoch /= num_updates
         action_loss_epoch /= num_updates
         dist_entropy_epoch /= num_updates
+
 
         return value_loss_epoch, action_loss_epoch, dist_entropy_epoch, {}
