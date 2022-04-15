@@ -349,8 +349,8 @@ def main():
 
 if __name__ == "__main__":
     main()
-    import cProfile
+    '''import cProfile
 
-    cProfile.run('main()', filename='restates')
+    cProfile.run('main()', filename='restates')'''
 
 
