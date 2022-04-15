@@ -42,7 +42,7 @@ def get_args():
                         help='how many training CPU processes to use (default: 16)')
     parser.add_argument('--num-steps', type=int, default=5,
                         help='number of forward steps in A2C (default: 5)')
-    parser.add_argument('--ppo-epoch', type=int, default=2,
+    parser.add_argument('--ppo-epoch', type=int, default=3,
                         help='number of ppo epochs (default: 4)')
     parser.add_argument('--num-mini-batch', type=int, default=32,
                         help='number of batches for ppo (default: 32)')
@@ -70,7 +70,7 @@ def get_args():
                         help='eval interval, one eval per n updates (default: None)')
     parser.add_argument('--vis-interval', type=int, default=100,
                         help='vis interval, one log per n updates (default: 100)')
-    parser.add_argument('--num-frames', type=int, default=5e3,
+    parser.add_argument('--num-frames', type=int, default=5e7,
                         help='number of frames to train (default: 5e7)')
     parser.add_argument('--env-name', default='PommeFFACompetitionFast-v0',
                         help='environment to train on (default: PommeFFACompetitionFast-v0)')
