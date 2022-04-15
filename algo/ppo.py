@@ -28,8 +28,8 @@ class PPO():
 
         self.max_grad_norm = max_grad_norm
 
-        #self.optimizer = optim.Adam(actor_critic.parameters(), lr=lr, eps=eps)
-        self.optimizer = optim.RMSprop(actor_critic.parameters(), lr, eps=eps)
+        self.optimizer = optim.Adam(actor_critic.parameters(), lr=lr, eps=eps)
+        #self.optimizer = optim.RMSprop(actor_critic.parameters(), lr, eps=eps)
         if lr_schedule is not None:
             self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, lr_schedule)
         else:
