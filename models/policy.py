@@ -51,8 +51,6 @@ class Policy(nn.Module):
 
     def evaluate_actions(self, inputs, rnn_hxs, masks, action):
         value, actor_features, rnn_hxs = self.nn(inputs, rnn_hxs, masks)
-        print('value',value.device)
-        print('actor_features',actor_features.device)
 
         dist = self.dist(actor_features)
 
