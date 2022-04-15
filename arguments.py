@@ -5,7 +5,7 @@ import torch
 
 def get_args():
     parser = argparse.ArgumentParser(description='RL')
-    parser.add_argument('--algo', default='ppo',
+    parser.add_argument('--algo', default='dppo',
                         help='algorithm to use: a2c|sa2c | ppo | acktr')
     parser.add_argument('--lr', type=float, default=2.5e-5,
                         help='learning rate (default: 2.5e-4)')
