@@ -301,28 +301,28 @@ def main():
                   format(j, np.mean(eval_episode_rewards)))
             print(" Evaluation using {} episodes: mean reward {:.5f}\n".
                   format(len(eval_episode_rewards), np.mean(eval_episode_rewards)))
-        np.savetxt('./results/final_results_Teamnew_lr2.5e5evl200_maacoppQR/train_score_seed_{}.csv'.format(42),
+        np.savetxt('./results/domac_Team_partial/train_score_seed_{}.csv'.format(42),
                    np.array(log_mean),
                    delimiter=";")
-        np.savetxt('./results/final_results_Teamnew_lr2.5e5evl200_maacoppQR/train_scorestd_seed_{}.csv'.format(42),
+        np.savetxt('./results/domac_Team_partial/train_scorestd_seed_{}.csv'.format(42),
                    np.array(log_std),
                    delimiter=";")
-        np.savetxt('./results/final_results_Teamnew_lr2.5e5evl200_maacoppQR/train_dist_entropy_seed_{}.csv'.format(42),
+        np.savetxt('./results/domac_Team_partial/train_dist_entropy_seed_{}.csv'.format(42),
                    np.array(log_dist_entropy),
                    delimiter=";")
-        np.savetxt('./results/final_results_Teamnew_lr2.5e5evl200_maacoppQR/train_dist_entropystd_seed_{}.csv'.format(42),
+        np.savetxt('./results/domac_Team_partial/train_dist_entropystd_seed_{}.csv'.format(42),
                    np.array(log_dist_entropy_std),
                    delimiter=";")
-        np.savetxt('./results/final_results_Teamnew_lr2.5e5evl200_maacoppQR/train_acc_seed_{}.csv'.format(42),
+        np.savetxt('./results/domac_Team_partial/train_acc_seed_{}.csv'.format(42),
             np.array(log_acc_mean),
             delimiter=";")
-        np.savetxt('./results/final_results_Teamnew_lr2.5e5evl200_maacoppQR/train_accstd_seed_{}.csv'.format(42),
+        np.savetxt('./results/domac_Team_partial/train_accstd_seed_{}.csv'.format(42),
             np.array(log_acc_std),
             delimiter=";")
-        np.savetxt('./results/final_results_Teamnew_lr2.5e5evl200_maacoppQR/train_oppentropy_seed_{}.csv'.format(42),
+        np.savetxt('./results/domac_Team_partial/train_oppentropy_seed_{}.csv'.format(42),
                    np.array(log_opp_dist_entropy),
                    delimiter=";")
-        np.savetxt('./results/final_results_Teamnew_lr2.5e5evl200_maacoppQR/train_oppentropystd_seed_{}.csv'.format(42),
+        np.savetxt('./results/domac_Team_partial/train_oppentropystd_seed_{}.csv'.format(42),
                    np.array(log_opp_dist_entropy_std),
                    delimiter=";")
 
