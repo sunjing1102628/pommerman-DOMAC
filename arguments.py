@@ -5,7 +5,7 @@ import torch
 
 def get_args():
     parser = argparse.ArgumentParser(description='RL')
-    parser.add_argument('--algo', default='dppo',
+    parser.add_argument('--algo', default='qra2c',
                         help='algorithm to use: a2c|sa2c | ppo | acktr')
     parser.add_argument('--lr', type=float, default=2.5e-5,
                         help='learning rate (default: 2.5e-4)')
@@ -14,8 +14,8 @@ def get_args():
     parser.add_argument("--action-dim", type=str, default=6, help="numbers of the action dim")
     parser.add_argument("--target_update_interval", type=int, default=20,
                         help="update target network once every time this many episodes are completed")
-    parser.add_argument("--lr-actor", type=float, default=3e-4, help="learning rate of actor")
-    parser.add_argument("--lr-critic", type=float, default=1e-3, help="learning rate of critic")
+    #parser.add_argument("--lr-actor", type=float, default=3e-4, help="learning rate of actor")
+    #parser.add_argument("--lr-critic", type=float, default=1e-3, help="learning rate of critic")
     parser.add_argument("--n-agents", type=str, default=1, help="numbers of the agents")
     parser.add_argument("--opp-agents", type=str, default=3, help="numbers of the agents")
     parser.add_argument('--lr-schedule', type=float, default=None,
@@ -36,7 +36,7 @@ def get_args():
                         help='value loss coefficient (default: 0.5)')
     parser.add_argument('--max-grad-norm', type=float, default=0.5,
                         help='max norm of gradients (default: 0.5)')
-    parser.add_argument('--seed', type=int, default=1,
+    parser.add_argument('--seed', type=int, default=30,
                         help='random seed (default: 1)')
     parser.add_argument('--num-processes', type=int, default=16,
                         help='how many training CPU processes to use (default: 16)')
@@ -72,7 +72,7 @@ def get_args():
                         help='vis interval, one log per n updates (default: 100)')
     parser.add_argument('--num-frames', type=int, default=5e7,
                         help='number of frames to train (default: 5e7)')
-    parser.add_argument('--env-name', default='PommeFFACompetitionFast-v0',
+    parser.add_argument('--env-name', default='PommeFFAPartialFast-v0',
                         help='environment to train on (default: PommeFFACompetitionFast-v0)')
     parser.add_argument('--log-dir', default='/tmp/gym/',
                         help='directory to save agent logs (default: /tmp/gym)')
