@@ -18,7 +18,7 @@ from replay_storage import ReplayStorage
 
 args = get_args()
 
-assert args.algo in ['a2c','a2c-sil', 'ppo', 'ppo-sil', 'acktr']
+assert args.algo in ['a2c','qra2c', 'ppo', 'ppo-sil', 'acktr']
 if args.recurrent_policy:
     assert args.algo in ['a2c', 'ppo'], \
         'Recurrent policy is not implemented for ACKTR or SIL'
@@ -91,7 +91,7 @@ def main():
 
 
 
-    if args.algo.startswith('a2c'):
+    if args.algo.startswith('qra2c'):
         agent = algo.A2C_TeamQR(
             actor_critic, args.value_loss_coef,
             args.entropy_coef,
@@ -301,13 +301,13 @@ def main():
                   format(j, np.mean(eval_episode_rewards)))
             print(" Evaluation using {} episodes: mean reward {:.5f}\n".
                   format(len(eval_episode_rewards), np.mean(eval_episode_rewards)))
-        np.savetxt('./results/domac_Team_partial/train_score_seed_{}.csv'.format(42),
+        np.savetxt('./results/domac_Team_seed40/train_score_seed_{}.csv'.format(40),
                    np.array(log_mean),
                    delimiter=";")
-        np.savetxt('./results/domac_Team_partial/train_scorestd_seed_{}.csv'.format(42),
+        np.savetxt('./results/domac_Team_seed40/train_scorestd_seed_{}.csv'.format(40),
                    np.array(log_std),
                    delimiter=";")
-        np.savetxt('./results/domac_Team_partial/train_dist_entropy_seed_{}.csv'.format(42),
+        '''np.savetxt('./results/domac_Team_partial/train_dist_entropy_seed_{}.csv'.format(42),
                    np.array(log_dist_entropy),
                    delimiter=";")
         np.savetxt('./results/domac_Team_partial/train_dist_entropystd_seed_{}.csv'.format(42),
@@ -318,13 +318,8 @@ def main():
             delimiter=";")
         np.savetxt('./results/domac_Team_partial/train_accstd_seed_{}.csv'.format(42),
             np.array(log_acc_std),
-            delimiter=";")
-        np.savetxt('./results/domac_Team_partial/train_oppentropy_seed_{}.csv'.format(42),
-                   np.array(log_opp_dist_entropy),
-                   delimiter=";")
-        np.savetxt('./results/domac_Team_partial/train_oppentropystd_seed_{}.csv'.format(42),
-                   np.array(log_opp_dist_entropy_std),
-                   delimiter=";")
+            delimiter=";")'''
+
 
 
         '''if args.vis and j % args.vis_interval == 0:
