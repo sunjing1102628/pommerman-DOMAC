@@ -304,20 +304,20 @@ def main():
             print(" Evaluation using {} episodes: mean reward {:.5f}\n".
                 format(len(eval_episode_rewards), np.mean(eval_episode_rewards)))
 
-        np.savetxt('./results/domac_FFA_seed30/train_score_seed_{}.csv'.format(30),
+        np.savetxt('./results/domac_FFA_seed20/train_score_seed_{}.csv'.format(20),
                    np.array(log_mean),
                    delimiter=";")
-        np.savetxt('./results/domac_FFA_seed30/train_scorestd_seed_{}.csv'.format(30),
+        np.savetxt('./results/domac_FFA_seed20/train_scorestd_seed_{}.csv'.format(20),
                    np.array(log_std),
                    delimiter=";")
-        np.savetxt('./results/domac_FFA_seed30/train_dist_entropy_seed_{}.csv'.format(30),
+        np.savetxt('./results/domac_FFA_seed20/train_dist_entropy_seed_{}.csv'.format(20),
                    np.array(log_dist_entropy),
                    delimiter=";")
         np.savetxt(
-            './results/domac_FFA_seed30/train_dist_entropystd_seed_{}.csv'.format(30),
+            './results/domac_FFA_seed20/train_dist_entropystd_seed_{}.csv'.format(20),
             np.array(log_dist_entropy_std),
             delimiter=";")
-        np.savetxt('./results/domac_FFA_seed30/train_acc_seed_{}.csv'.format(30),
+        '''np.savetxt('./results/domac_FFA_seed30/train_acc_seed_{}.csv'.format(30),
                    np.array(log_acc_mean),
                    delimiter=";")
         np.savetxt('./results/domac_FFA_seed30/train_accstd_seed_{}.csv'.format(30),
@@ -328,7 +328,7 @@ def main():
                    delimiter=";")
         np.savetxt('./results/domac_FFA_seed30/train_oppentropystd_seed_{}.csv'.format(30),
                    np.array(log_opp_dist_entropy_std),
-                   delimiter=";")
+                   delimiter=";")'''
 
         '''if args.vis and j % args.vis_interval == 0:
             try:
