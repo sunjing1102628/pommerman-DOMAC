@@ -312,10 +312,10 @@ def main():
             print(" Evaluation using {} episodes: mean reward {:.5f}\n".
                 format(len(eval_episode_rewards), np.mean(eval_episode_rewards)))
 
-        np.savetxt('./results/doppo_FFA/train_score_seed_{}.csv'.format(42),
+        np.savetxt('./results/doppo_FFA/train_score_seed_{}.csv'.format(30),
                    np.array(log_mean),
                    delimiter=";")
-        np.savetxt('./results/doppo_FFA/train_scorestd_seed_{}.csv'.format(42),
+        '''np.savetxt('./results/doppo_FFA/train_scorestd_seed_{}.csv'.format(42),
                    np.array(log_std),
                    delimiter=";")
         np.savetxt('./results/doppo_FFA/train_dist_entropy_seed_{}.csv'.format(42),
@@ -336,7 +336,7 @@ def main():
                    delimiter=";")
         np.savetxt('./results/doppo_FFA/train_oppentropystd_seed_{}.csv'.format(42),
                    np.array(log_opp_dist_entropy_std),
-                   delimiter=";")
+                   delimiter=";")'''
 
         '''if args.vis and j % args.vis_interval == 0:
             try:
