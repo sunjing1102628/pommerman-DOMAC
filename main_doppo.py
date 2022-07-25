@@ -312,7 +312,7 @@ def main():
             print(" Evaluation using {} episodes: mean reward {:.5f}\n".
                 format(len(eval_episode_rewards), np.mean(eval_episode_rewards)))
 
-        np.savetxt('./results/doppo_FFA/train_score_seed_{}.csv'.format(20),
+        np.savetxt('./results/doppo_FFA/train_score_seed_{}.csv'.format(40),
                    np.array(log_mean),
                    delimiter=";")
         '''np.savetxt('./results/doppo_FFA/train_scorestd_seed_{}.csv'.format(42),
