@@ -93,7 +93,7 @@ class Agent_Actor(nn.Module):
         # print('agent_probs is',agent_action_probs.size())
         # print('action_probs1', torch.matmul(opp_actions_probs, agent_action_probs).size())
         actions_probs = torch.matmul(opp_actions_probs3, agent_action_probs).squeeze(1).to(x.device)
-        # print('actions_probs',actions_probs)
+        print('actions_probs',actions_probs.size())
         # print('actions_probs',actions_probs.size())
 
         return actions_probs,evl_oppaction_prob,sum(opp_actions_entropy)/3

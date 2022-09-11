@@ -304,10 +304,10 @@ def main():
             print(" Evaluation using {} episodes: mean reward {:.5f}\n".
                 format(len(eval_episode_rewards), np.mean(eval_episode_rewards)))
 
-        np.savetxt('./results/domac_FFA_seed20/train_score_seed_{}.csv'.format(50),
+        np.savetxt('./results/DOMAC_FFA_mask/train_score_seed_{}.csv'.format(50),
                    np.array(log_mean),
                    delimiter=";")
-        np.savetxt('./results/domac_FFA_seed20/train_scorestd_seed_{}.csv'.format(50),
+        np.savetxt('./results/DOMAC_FFA_mask/train_scorestd_seed_{}.csv'.format(50),
                    np.array(log_std),
                    delimiter=";")
         '''np.savetxt('./results/domac_FFA_seed20/train_dist_entropy_seed_{}.csv'.format(20),
