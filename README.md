@@ -18,7 +18,7 @@ conda activate pommerman
 conda env update --file env.yml  --prune
 
 # run the training command
-python main.py --use-gae --env-name PommeFFACompetitionFast-v0 --no-norm --seed 42 --algo a2c --lr-schedule 25000000 --no-vis
+python main_domac_FFA.py --use-gae --env-name PommeFFACompetitionFast-v0 --no-norm --seed 42 --algo a2c --lr-schedule 25000000 --no-vis
 
 ```
 ## Usage
