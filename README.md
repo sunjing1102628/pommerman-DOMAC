@@ -2,7 +2,7 @@
 
 This is a PyTorch starting point for experimenting with ideas for the Pommerman competitions (https://www.pommerman.com/)
 
-The reinforcement learning codebase is based upon Ilya Kostrikov's awesome work (https://github.com/ikostrikov/pytorch-a2c-ppo-acktr)
+The reinforcement learning codebase is based upon the work (https://arxiv.org/abs/2211.11940)
 
 It requires the Pommerman `playground` (https://github.com/MultiAgentLearning/playground) to be installed in your Python environment, in addition to any dependencies of `pytorch-a2c-ppo-acktr`.
 
